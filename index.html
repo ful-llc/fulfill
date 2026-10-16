@@ -1,0 +1,1900 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>fulfill</title>
+<meta name="description" content="もっとできるはず、をカタチにしていく">
+<meta name="theme-color" content="#fff8f1" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#1b1710" media="(prefers-color-scheme: dark)">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="fulfill">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" href="icon-192.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<style>:root{box-sizing:border-box}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;-webkit-text-size-adjust:100%;padding-top:env(safe-area-inset-top,0px)!important;padding-bottom:calc(40px + env(safe-area-inset-bottom,0px))!important}img{max-width:100%}</style>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&family=Zen+Maru+Gothic:wght@500;700&display=swap">
+<style>
+  /* Layout: month switcher in a sticky header; each month opens with its purpose (どんな月にしたいか + 今月のwant), then the tasks that serve it, then that month's completed log */
+  :root{
+    /* 陰陽：陰＝ピンク（月・やわらかさ・望む）、陽＝黄（太陽・動き・行動）。陽の光を強めに。
+       二つが交わると山吹〜オレンジ（朝陽の色＝カタチになる瞬間）になる */
+    --bg:#fff8f1;
+    --surface:#ffffff;
+    --surface-2:#fdf0e5;
+    --border:#f1dfcd;
+    --fg:#2e2418;
+    --fg-muted:#7f6d55;
+    --accent:#c9700a;
+    --accent-soft:#fff4dc;
+    --want:#d9437a;
+    --want-soft:#fde9f0;
+    --fusion:#e08a0e;
+    --fusion-soft:#fff3d9;
+    --yin:#ef5d93;
+    --yang:#f7c531;
+    --danger:#c8413c;
+    --danger-soft:#fbe6e4;
+    --warn:#a87a06;
+    --warn-soft:#fbf2d6;
+    --done:#3f9a6c;
+    --done-soft:#e4f4ea;
+    --on-accent:#ffffff;
+    --thanks:#d9437a;
+    --thanks-soft:#fde9f0;
+    --wish:#e08a0e;
+    --wish-soft:#fff3d9;
+    --grad:linear-gradient(100deg,#ef5d93 0%,#f4892f 30%,#f7b829 60%,#f9d23c 100%);
+    --spectrum:linear-gradient(180deg,#ef5d93 0%,#f4892f 30%,#f7b829 60%,#f9d23c 100%);
+    --logo-grad:linear-gradient(100deg,#ef5d93 0%,#f4892f 30%,#f7b829 60%,#f9d23c 100%);
+    color-scheme:light;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --bg:#1b1710; --surface:#272116; --surface-2:#332b1d; --border:#4a3f2a;
+      --fg:#fbf3e6; --fg-muted:#c4b396;
+      --accent:#ffb54d; --accent-soft:#3e321c;
+      --want:#ff86b0; --want-soft:#45232f;
+      --fusion:#ffc14d; --fusion-soft:#40341b;
+      --yin:#ff86b0; --yang:#ffdb6e;
+      --danger:#ff8f8f; --danger-soft:#47232b;
+      --warn:#f0cd5c; --warn-soft:#3d331a;
+      --done:#7fd3a3; --done-soft:#1f3a2c;
+      --on-accent:#1b1710;
+      --thanks:#ff86b0; --thanks-soft:#45232f;
+      --wish:#ffc14d; --wish-soft:#40341b;
+      --grad:linear-gradient(100deg,#ff86b0 0%,#ffa75a 30%,#ffc94d 60%,#ffdf72 100%);
+      --spectrum:linear-gradient(180deg,#ff86b0 0%,#ffa75a 30%,#ffc94d 60%,#ffdf72 100%);
+      --logo-grad:linear-gradient(100deg,#ff86b0 0%,#ffa75a 30%,#ffc94d 60%,#ffdf72 100%);
+      color-scheme:dark;
+    }
+  }
+  :root[data-theme="dark"]{
+      --bg:#1b1710; --surface:#272116; --surface-2:#332b1d; --border:#4a3f2a;
+      --fg:#fbf3e6; --fg-muted:#c4b396;
+      --accent:#ffb54d; --accent-soft:#3e321c;
+      --want:#ff86b0; --want-soft:#45232f;
+      --fusion:#ffc14d; --fusion-soft:#40341b;
+      --yin:#ff86b0; --yang:#ffdb6e;
+      --danger:#ff8f8f; --danger-soft:#47232b;
+      --warn:#f0cd5c; --warn-soft:#3d331a;
+      --done:#7fd3a3; --done-soft:#1f3a2c;
+      --on-accent:#1b1710;
+      --thanks:#ff86b0; --thanks-soft:#45232f;
+      --wish:#ffc14d; --wish-soft:#40341b;
+      --grad:linear-gradient(100deg,#ff86b0 0%,#ffa75a 30%,#ffc94d 60%,#ffdf72 100%);
+      --spectrum:linear-gradient(180deg,#ff86b0 0%,#ffa75a 30%,#ffc94d 60%,#ffdf72 100%);
+      --logo-grad:linear-gradient(100deg,#ff86b0 0%,#ffa75a 30%,#ffc94d 60%,#ffdf72 100%);
+      color-scheme:dark;
+  }
+
+  *{box-sizing:border-box;}
+  [hidden]{display:none!important;}
+  body{
+    background:var(--bg);
+    color:var(--fg);
+    font-family:"Noto Sans JP","Hiragino Kaku Gothic ProN","Yu Gothic",sans-serif;
+    padding-inline:16px;
+    padding-block:0 40px;
+    max-width:720px;
+    margin:0 auto;
+  }
+  h1,h2,.display{font-family:"Zen Maru Gothic","Noto Sans JP",sans-serif;}
+  button{font-family:inherit;}
+  button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible,.task:focus-visible{outline:2px solid var(--accent);outline-offset:2px;}
+
+  header.top{
+    position:sticky;
+    top:env(safe-area-inset-top,0px);
+    background:var(--bg);
+    padding-block:14px 10px;
+    z-index:5;
+    border-bottom:1px solid var(--border);
+    margin-bottom:18px;
+  }
+  .top-row{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;}
+  h1{font-size:1.15rem;font-weight:700;margin:0;}
+  .month-nav{display:flex;align-items:center;gap:4px;}
+  .month-nav .label{font-family:"Zen Maru Gothic",sans-serif;font-weight:700;font-size:1rem;min-width:7.5em;text-align:center;font-variant-numeric:tabular-nums;}
+  .icon-btn{
+    border:1px solid var(--border);background:var(--surface);color:var(--fg);
+    width:32px;height:32px;border-radius:9px;cursor:pointer;font-size:.9rem;
+  }
+  .today-link{font-size:.72rem;color:var(--accent);background:none;border:none;cursor:pointer;padding:4px 6px;}
+  .brand{display:flex;flex-direction:column;gap:1px;min-width:0;}
+  .brand-row{display:flex;align-items:center;gap:8px;}
+  .mark{width:34px;height:24px;flex:none;display:block;}
+  .wordmark-svg{margin:0;line-height:0;}
+  .wordmark-svg svg{height:var(--wm-h,54px);width:auto;display:block;overflow:visible;}
+  .tagline{font-size:.7rem;color:var(--fg-muted);}
+  .stats{font-size:.76rem;color:var(--fg-muted);margin-top:6px;font-variant-numeric:tabular-nums;}
+  .stats b{color:var(--fg);font-weight:600;}
+
+  .btn{border:none;border-radius:999px;padding:9px 14px;font-size:.84rem;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;gap:6px;}
+  .btn-accent{background:var(--accent);color:var(--on-accent);}
+  #add-btn.btn-accent{background:var(--grad);}
+  .btn-want{background:var(--want);color:var(--on-accent);}
+  .btn-ghost{background:transparent;color:var(--fg-muted);border:1px solid var(--border);}
+  .btn-danger{background:var(--danger);color:var(--on-accent);}
+  .btn-sm{padding:6px 12px;font-size:.76rem;border-radius:999px;}
+
+  .section-head{display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin:0 0 10px;}
+  .section-head{flex-wrap:wrap;}
+  .section-head h2{font-size:1rem;margin:0;white-space:nowrap;}
+  .section-head .sub{font-size:.72rem;color:var(--fg-muted);}
+
+  /* purpose block */
+  .purpose{
+    box-shadow:0 8px 28px -16px rgba(247,184,41,.36);
+    background:var(--surface);
+    border:1px solid var(--border);
+    border-radius:22px;
+    padding:16px;
+    margin-bottom:26px;
+  }
+  .eyebrow{font-size:.72rem;font-weight:700;color:var(--fusion);letter-spacing:.04em;margin-bottom:6px;}
+  .theme-text{
+    font-family:"Zen Maru Gothic","Noto Sans JP",sans-serif;
+    font-size:1.08rem;font-weight:700;line-height:1.55;
+    white-space:pre-wrap;word-break:break-word;
+    cursor:pointer;margin:0;
+  }
+  .theme-text.placeholder{color:var(--fg-muted);font-weight:500;font-size:.92rem;}
+  .theme-edit textarea{
+    width:100%;min-height:70px;padding:10px;border-radius:10px;border:1px solid var(--border);
+    background:var(--surface);color:var(--fg);font-family:inherit;font-size:.92rem;resize:vertical;
+  }
+  .theme-edit .actions{display:flex;justify-content:flex-end;gap:8px;margin-top:8px;}
+  .divider{height:1px;background:var(--border);margin:16px 0 14px;}
+
+  .want-list{display:flex;flex-direction:column;gap:8px;}
+  .want{
+    display:flex;align-items:flex-start;gap:10px;
+    padding:10px 12px;border-radius:12px;
+    background:var(--want-soft);
+    border:1px solid transparent;
+    cursor:pointer;min-width:0;
+  }
+  .want{position:relative;overflow:hidden;padding-left:16px;border-radius:16px;}
+  .want::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--spectrum);}
+  .want.active{border-color:var(--want);}
+  .want.achieved .want-title{text-decoration:line-through;opacity:.65;}
+  .want-mark{
+    flex:none;width:22px;height:22px;border-radius:50%;
+    border:2px solid var(--want);background:transparent;cursor:pointer;
+    display:flex;align-items:center;justify-content:center;margin-top:1px;
+    color:var(--on-accent);font-size:.7rem;
+  }
+  .want.achieved .want-mark{background:var(--want);}
+  .want-body{flex:1;min-width:0;}
+  .want-title{font-size:.9rem;font-weight:600;line-height:1.45;word-break:break-word;}
+  .want-note{font-size:.74rem;color:var(--fg-muted);margin-top:2px;word-break:break-word;}
+  .want-progress{display:flex;align-items:center;gap:8px;margin-top:6px;}
+  .bar{flex:1;height:4px;border-radius:2px;background:var(--surface);overflow:hidden;max-width:160px;}
+  .bar > i{display:block;height:100%;background:var(--want);}
+  .want-progress span{font-size:.68rem;color:var(--fg-muted);font-variant-numeric:tabular-nums;white-space:nowrap;}
+  .want-edit-btn{flex:none;background:none;border:none;color:var(--fg-muted);cursor:pointer;font-size:.74rem;padding:2px 4px;}
+  .add-want-row{display:flex;gap:8px;margin-top:10px;}
+  .add-want-row input{
+    flex:1;min-width:0;padding:9px 11px;border-radius:10px;border:1px dashed var(--want);
+    background:transparent;color:var(--fg);font-size:.86rem;font-family:inherit;
+  }
+
+  /* tasks */
+  .filter-note{
+    display:flex;align-items:center;justify-content:space-between;gap:8px;
+    background:var(--want-soft);color:var(--want);font-size:.76rem;
+    padding:7px 10px;border-radius:10px;margin-bottom:12px;
+  }
+  .filter-note button{background:none;border:none;color:var(--want);font-weight:700;cursor:pointer;font-size:.76rem;}
+  section.group{margin-bottom:18px;}
+  .group-title{font-size:.72rem;font-weight:700;color:var(--fg-muted);letter-spacing:.04em;display:flex;align-items:center;gap:8px;margin-bottom:8px;}
+  .group-title .count{background:var(--surface-2);border-radius:999px;padding:1px 8px;font-size:.68rem;font-variant-numeric:tabular-nums;}
+  .group-title.overdue{color:var(--danger);}
+  .group-title.carry{color:var(--warn);}
+  .group-title.focus{color:var(--want);font-size:.8rem;}
+  .group-title.focus + .task-list .task{border-color:var(--want);border-width:1.5px;}
+  .focus-note{font-size:.72rem;color:var(--fg-muted);margin-top:5px;line-height:1.5;word-break:break-word;}
+  .check-field{display:flex;align-items:center;gap:8px;font-size:.82rem;margin-bottom:12px;cursor:pointer;}
+  .check-field input{width:18px;height:18px;accent-color:var(--want);}
+  .task-list{display:flex;flex-direction:column;gap:7px;}
+  .task{
+    background:var(--surface);border:1px solid var(--border);border-radius:12px;
+    padding:10px 12px;display:flex;align-items:flex-start;gap:10px;min-width:0;cursor:pointer;
+  }
+  .task.overdue{border-color:var(--danger);}
+  .task.done{opacity:.62;}
+  .check{
+    flex:none;width:22px;height:22px;border-radius:7px;border:2px solid var(--border);
+    background:var(--surface);cursor:pointer;display:flex;align-items:center;justify-content:center;margin-top:1px;padding:0;
+  }
+  .check svg{width:13px;height:13px;display:none;stroke:var(--on-accent);}
+  .task.done .check{background:var(--done);border-color:var(--done);}
+  .task.done .check svg{display:block;}
+  .task-body{min-width:0;flex:1;}
+  .task-title{font-size:.9rem;font-weight:500;line-height:1.4;word-break:break-word;}
+  .task.done .task-title{text-decoration:line-through;color:var(--fg-muted);}
+  .task-meta{display:flex;flex-wrap:wrap;gap:6px;margin-top:5px;}
+  .pill{font-size:.68rem;padding:2px 8px;border-radius:999px;background:var(--surface-2);color:var(--fg-muted);white-space:nowrap;font-variant-numeric:tabular-nums;}
+  .pill.due.overdue{background:var(--danger-soft);color:var(--danger);}
+  .pill.due.today{background:var(--warn-soft);color:var(--warn);}
+  .pill.pr-high{background:var(--danger-soft);color:var(--danger);}
+  .pill.pr-medium{background:var(--warn-soft);color:var(--warn);}
+  .pill.cat{background:var(--accent-soft);color:var(--accent);}
+  .pill.want-link{background:var(--want-soft);color:var(--want);white-space:normal;}
+  .carry-btn{flex:none;align-self:center;}
+  .done-date{font-size:.68rem;color:var(--fg-muted);margin-top:3px;font-variant-numeric:tabular-nums;}
+
+  .empty{color:var(--fg-muted);font-size:.8rem;padding:14px 10px;text-align:center;border:1px dashed var(--border);border-radius:12px;line-height:1.6;}
+  .done-toggle{
+    width:100%;text-align:left;background:var(--surface-2);border:1px solid var(--border);border-radius:12px;
+    padding:12px 14px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;color:var(--fg);font-size:.85rem;font-weight:600;margin-top:8px;
+  }
+  .done-toggle .chev{transition:transform .15s;color:var(--fg-muted);}
+  .done-toggle.open .chev{transform:rotate(180deg);}
+  .done-list{margin-top:8px;}
+
+  /* modal */
+  .overlay{position:fixed;inset:0;background:rgba(0,0,0,.4);display:flex;align-items:flex-end;justify-content:center;z-index:20;}
+  @media (min-width:560px){.overlay{align-items:center;}}
+  .modal{
+    background:var(--surface);width:100%;max-width:480px;border-radius:18px 18px 0 0;
+    padding:20px 18px calc(20px + env(safe-area-inset-bottom,0px));max-height:88vh;overflow-y:auto;
+  }
+  @media (min-width:560px){.modal{border-radius:18px;}}
+  .modal h2{font-size:1.05rem;margin:0 0 14px;}
+  .field{margin-bottom:12px;}
+  .field label{display:block;font-size:.72rem;color:var(--fg-muted);margin-bottom:5px;font-weight:600;}
+  .field input,.field select,.field textarea{
+    width:100%;padding:10px 11px;border-radius:9px;border:1px solid var(--border);
+    background:var(--surface);color:var(--fg);font-size:.88rem;font-family:inherit;
+  }
+  .field textarea{resize:vertical;min-height:50px;}
+  .field .hint{font-size:.68rem;color:var(--fg-muted);margin-top:4px;}
+  .row2{display:flex;gap:10px;flex-wrap:wrap;}
+  .row2 > .field{flex:1 1 140px;min-width:0;}
+  .modal-actions{display:flex;align-items:center;margin-top:16px;gap:10px;}
+  .modal-actions .right{display:flex;gap:8px;margin-left:auto;}
+
+  .toast{
+    position:fixed;left:50%;bottom:calc(18px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);
+    background:var(--fg);color:var(--bg);padding:10px 14px;border-radius:10px;font-size:.8rem;
+    display:flex;align-items:center;gap:12px;z-index:30;box-shadow:0 6px 20px rgba(0,0,0,.25);max-width:calc(100% - 32px);
+  }
+  .toast button{background:none;border:none;color:var(--bg);text-decoration:underline;font-weight:700;cursor:pointer;font-size:.8rem;}
+  .notice{font-size:.78rem;color:var(--fg-muted);text-align:center;padding:24px 10px;}
+  /* tabs */
+  .tabs{display:flex;gap:4px;margin-top:10px;background:var(--surface-2);padding:3px;border-radius:11px;width:max-content;max-width:100%;}
+  .tab{border:none;background:transparent;color:var(--fg-muted);font-size:.82rem;font-weight:600;padding:7px 16px;border-radius:9px;cursor:pointer;}
+  .tab[aria-selected="true"]{background:var(--surface);color:var(--fg);box-shadow:0 1px 3px rgba(0,0,0,.08);}
+  .tab[data-tab="thanks"][aria-selected="true"]{color:var(--thanks);}
+  .tab[data-tab="habits"][aria-selected="true"]{color:var(--done);}
+  .tab[data-tab="wishes"][aria-selected="true"]{color:var(--wish);}
+  .tab{padding:7px 13px;}
+  @media (max-width:400px){ .tab{padding:7px 10px;font-size:.78rem;} }
+
+  /* wishes */
+  .btn-wish{background:var(--wish);color:var(--on-accent);}
+  .wish-hero{background:var(--wish-soft);border-radius:22px;padding:16px;margin-bottom:22px;}
+  .wish-hero .eyebrow{color:var(--wish);}
+  .wish-hero h2{font-family:"Zen Maru Gothic","Noto Sans JP",sans-serif;font-size:1.1rem;margin:0;line-height:1.5;word-break:keep-all;overflow-wrap:anywhere;}
+  .days-left{font-size:.78rem;color:var(--fg-muted);margin-top:4px;font-variant-numeric:tabular-nums;}
+  .days-left b{color:var(--wish);font-size:1.15rem;}
+  .wish-add{display:flex;gap:8px;margin-top:14px;}
+  .wish-add input{flex:1;min-width:0;padding:11px 12px;border-radius:10px;border:1px solid var(--border);background:var(--surface);color:var(--fg);font-size:.9rem;font-family:inherit;}
+  .wish-list{display:flex;flex-direction:column;gap:8px;margin-bottom:16px;}
+  .wish{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:11px 12px;display:flex;gap:10px;align-items:flex-start;min-width:0;cursor:pointer;}
+  .wish-star{flex:none;width:24px;height:24px;border-radius:50%;border:2px solid var(--wish);background:transparent;color:var(--on-accent);cursor:pointer;font-size:.72rem;display:flex;align-items:center;justify-content:center;padding:0;margin-top:1px;}
+  .wish.done .wish-star{background:var(--wish);}
+  .wish-body{flex:1;min-width:0;}
+  .wish-title{font-size:.92rem;font-weight:600;line-height:1.45;word-break:break-word;}
+  .wish-note{font-size:.76rem;color:var(--fg-muted);margin-top:3px;line-height:1.5;word-break:break-word;}
+  .wish-meta{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px;align-items:center;}
+  .pill.wishp{background:var(--wish-soft);color:var(--wish);}
+  .promote{flex:none;align-self:center;}
+
+
+  /* habits */
+  .btn-habit{background:var(--done);color:var(--on-accent);}
+  .habit-list{display:flex;flex-direction:column;gap:12px;margin-bottom:22px;}
+  .habit{background:var(--surface);border:1px solid var(--border);border-radius:22px;padding:14px;min-width:0;}
+  .habit.met{border-color:var(--done);}
+  .habit-top{display:flex;align-items:center;gap:12px;min-width:0;}
+  .today-btn{
+    flex:none;width:52px;height:52px;border-radius:50%;
+    border:2px solid var(--done);background:var(--surface);color:var(--done);
+    font-size:.7rem;font-weight:700;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1.15;font-family:inherit;
+  }
+  .today-btn .mark{font-size:1.05rem;}
+  .today-btn[aria-pressed="true"]{background:var(--done);color:var(--on-accent);}
+  .habit-head{flex:1;min-width:0;cursor:pointer;}
+  .habit-name{font-family:"Zen Maru Gothic","Noto Sans JP",sans-serif;font-weight:700;font-size:1rem;line-height:1.35;word-break:break-word;}
+  .habit-sub{display:flex;flex-wrap:wrap;gap:6px;margin-top:5px;align-items:center;}
+  .pill.freq{background:var(--done-soft);color:var(--done);}
+  .pill.met{background:var(--done);color:var(--on-accent);}
+  .habit-progress{font-size:.76rem;color:var(--fg-muted);margin-top:6px;font-variant-numeric:tabular-nums;}
+  .habit-progress b{color:var(--fg);}
+  .cal{display:grid;grid-template-columns:repeat(7, minmax(0,1fr));gap:4px;margin-top:12px;max-width:320px;}
+  .cal .wd{font-size:.62rem;color:var(--fg-muted);text-align:center;padding-bottom:2px;}
+  .cal .d{
+    aspect-ratio:1/1;max-width:100%;border-radius:7px;border:1px solid var(--border);background:var(--surface-2);
+    font-size:.66rem;color:var(--fg-muted);display:flex;align-items:center;justify-content:center;cursor:pointer;padding:0;font-family:inherit;font-variant-numeric:tabular-nums;
+  }
+  .cal .d.on{background:var(--done);border-color:var(--done);color:var(--on-accent);font-weight:700;}
+  .cal .d.today{outline:2px solid var(--accent);outline-offset:1px;}
+  .cal .d:disabled{opacity:.35;cursor:default;}
+  .cal .blank{aspect-ratio:1/1;}
+
+  /* thanks */
+  .btn-thanks{background:var(--thanks);color:var(--on-accent);}
+  .thanks-card{background:var(--surface);border:1px solid var(--border);border-radius:22px;padding:16px;margin-bottom:22px;}
+  .thanks-card .eyebrow{color:var(--thanks);}
+  .prompt{font-family:"Zen Maru Gothic","Noto Sans JP",sans-serif;font-size:1.05rem;font-weight:700;line-height:1.6;margin:0 0 4px;text-wrap:balance;}
+  .link-btn{background:none;border:none;padding:2px 0;color:var(--fg-muted);font-size:.72rem;cursor:pointer;text-decoration:underline;}
+  .thanks-form{margin-top:14px;}
+  .thanks-form .submit-row{display:flex;justify-content:flex-end;}
+  .lookback{background:var(--thanks-soft);border-radius:22px;padding:14px 16px;margin-bottom:22px;}
+  .lookback .eyebrow{color:var(--thanks);margin-bottom:8px;}
+  .lookback .lb-person{font-weight:700;font-size:.92rem;}
+  .lookback .lb-what{font-size:.9rem;line-height:1.6;margin-top:2px;word-break:break-word;}
+  .lookback .lb-feel{font-size:.78rem;color:var(--fg-muted);margin-top:4px;line-height:1.6;word-break:break-word;}
+  .lookback .lb-foot{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-top:8px;}
+  .lookback .lb-when{font-size:.7rem;color:var(--fg-muted);font-variant-numeric:tabular-nums;}
+  .people{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:22px;}
+  .person-chip{border:1px solid var(--border);background:var(--surface);color:var(--fg);border-radius:999px;padding:5px 12px;font-size:.78rem;cursor:pointer;font-family:inherit;}
+  .person-chip b{color:var(--thanks);font-weight:700;margin-left:4px;font-variant-numeric:tabular-nums;}
+  .person-chip[aria-pressed="true"]{border-color:var(--thanks);background:var(--thanks-soft);}
+  .day-head{font-size:.74rem;font-weight:700;color:var(--fg-muted);margin:16px 0 8px;font-variant-numeric:tabular-nums;}
+  .day-head:first-child{margin-top:0;}
+  .thanks-item{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:11px 13px;cursor:pointer;display:flex;gap:10px;align-items:flex-start;min-width:0;margin-bottom:7px;}
+  .thanks-item .ti-body{flex:1;min-width:0;}
+  .ti-person{font-size:.8rem;font-weight:700;color:var(--thanks);}
+  .ti-what{font-size:.9rem;line-height:1.55;margin-top:2px;word-break:break-word;}
+  .ti-feel{font-size:.76rem;color:var(--fg-muted);margin-top:3px;line-height:1.55;word-break:break-word;}
+  .told{flex:none;border:1px dashed var(--border);background:transparent;color:var(--fg-muted);border-radius:999px;padding:3px 9px;font-size:.68rem;cursor:pointer;white-space:nowrap;font-family:inherit;}
+  .told[aria-pressed="true"]{border-style:solid;border-color:var(--thanks);color:var(--thanks);background:var(--thanks-soft);}
+  @media (prefers-reduced-motion: reduce){*{transition:none!important;}}
+</style>
+</head>
+<body>
+<style>
+  /* auth screen */
+  .auth-wrap{min-height:100vh;min-height:100dvh;display:flex;align-items:center;justify-content:center;padding:24px 0;}
+  .auth-card{width:100%;max-width:380px;background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:26px 20px;}
+  .auth-brand{text-align:center;margin-bottom:20px;}
+  .auth-card .mark{width:46px;height:32px;}
+  .auth-brand p{font-size:.78rem;color:var(--fg-muted);margin:6px 0 0;}
+  .auth-card h2{font-size:1rem;margin:0 0 14px;text-align:center;}
+  .auth-card .btn{width:100%;justify-content:center;padding:12px 14px;font-size:.9rem;margin-top:4px;}
+  .auth-msg{font-size:.8rem;line-height:1.6;border-radius:10px;padding:10px 12px;margin-bottom:12px;word-break:break-word;}
+  .auth-msg.err{background:var(--danger-soft);color:var(--danger);}
+  .auth-msg.ok{background:var(--done-soft);color:var(--done);}
+  .auth-links{display:flex;flex-direction:column;align-items:center;gap:6px;margin-top:16px;}
+  .link-btn{background:none;border:none;color:var(--accent);font-size:.8rem;cursor:pointer;padding:4px;font-family:inherit;}
+  .app-foot{display:flex;justify-content:center;gap:12px;align-items:center;margin-top:36px;font-size:.72rem;color:var(--fg-muted);flex-wrap:wrap;}
+  .app-foot .link-btn{font-size:.72rem;color:var(--fg-muted);text-decoration:underline;}
+  .boot{min-height:60vh;display:flex;align-items:center;justify-content:center;color:var(--fg-muted);font-size:.85rem;}
+</style>
+
+<div id="boot-screen" class="boot">読み込み中…</div>
+
+<div id="auth-screen" class="auth-wrap" hidden>
+  <div class="auth-card">
+    <div class="auth-brand"><div class="brand-row" style="justify-content:center"><svg class="mark" viewBox="0 0 40 28" aria-hidden="true"><circle cx="14" cy="14" r="11" fill="var(--yin)"/><circle cx="26" cy="14" r="11" fill="var(--yang)"/><path d="M20 4.78A11 11 0 0 1 20 23.22A11 11 0 0 1 20 4.78z" fill="var(--fusion)"/></svg><h1 class="wordmark-svg" aria-label="fulfill" style="--wm-h:80px"><svg viewBox="0 -5 224 85" role="img" aria-hidden="true"><defs><linearGradient id="wmg2" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="224" y2="0"><stop offset="0" style="stop-color:var(--yin)"/><stop offset=".5" style="stop-color:var(--fusion)"/><stop offset="1" style="stop-color:var(--yang)"/></linearGradient></defs><g fill="none" stroke="url(#wmg2)" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round"><path d="M47 8C43 2 33 0 27 6C23 10 22 18 22 28L22 40C22 58.8 37.9 74 57.5 74C77.1 74 93 58.8 93 40C96 25 97 5 87 5C76 5 75 27 85 40C91 48 110 58 146 34"/><path d="M4 52C14 47 27 41 41 35"/><path d="M151 8C147 2 137 0 131 6C127 10 126 18 126 28L126 40C126 58.8 142.8 74 163.5 74C184.2 74 201 58.8 201 40C204 25 205 5 195 5C184 5 183 27 193 40C199 48 208 54 218 47"/></g><path d="M53 47.4Q53 49.9 53.8 51.3Q54.5 52.6 56 52.6Q56.9 52.6 57.7 52.1Q58.4 51.6 59 50.6Q59.6 49.6 59.9 48.3Q60.2 47 60.2 45.4Q60.2 44.5 60.1 43.8Q60 43.1 59.9 42.5Q59.8 42 59.8 41.5Q59.7 41.1 59.7 40.7Q59.7 40.1 60.2 39.9Q60.7 39.6 61.8 39.6Q63.2 39.6 64 40.2Q64.7 40.9 64.7 42.1Q64.7 45.4 64.1 48Q63.4 50.6 62.3 52.4Q61.1 54.2 59.3 55.2Q57.6 56.2 55.5 56.2Q54 56.2 52.8 55.6Q51.5 55 50.6 53.8Q49.6 52.7 49.1 51.2Q48.6 49.6 48.6 47.8Q48.6 47.1 48.6 46.3Q48.7 45.5 48.8 44.5Q48.8 43.6 48.9 42.6Q49.1 41.5 49.2 40.2Q49.3 39.7 49.7 39.4Q50.2 39 50.9 39Q51.5 39 52.1 39.2Q52.6 39.3 53 39.5Q53.4 39.7 53.7 40Q53.9 40.3 53.9 40.7Q53.9 41 53.8 41.7Q53.6 42.4 53.5 43.3Q53.3 44.3 53.2 45.3Q53 46.4 53 47.4Z" fill="url(#wmg2)"/><path d="M158.5 35.1Q158 35.1 157.5 34.9Q157 34.8 156.7 34.5Q156.3 34.2 156.1 33.8Q155.9 33.4 155.9 32.9Q155.9 32.2 156.6 31.7Q157.2 31.2 158.2 31.2Q158.7 31.2 159.2 31.4Q159.6 31.5 159.9 31.8Q160.3 32.1 160.5 32.5Q160.7 32.9 160.7 33.4Q160.7 34.2 160.1 34.6Q159.5 35.1 158.5 35.1ZM156 40.7Q156 40.1 156.5 39.7Q157.1 39.2 158 39.2Q159.7 39.2 159.8 40.4Q159.9 41.2 160 42.2Q160.1 43.2 160.1 44.3Q160.2 45.4 160.3 46.6Q160.4 47.8 160.4 49Q160.5 50.2 160.5 51.2Q160.5 52.3 160.5 53.2Q160.5 54.1 159.9 54.6Q159.2 55.1 158 55.1Q157.4 55.1 157.1 54.8Q156.7 54.5 156.7 54Q156.7 51.4 156.6 49.2Q156.5 47 156.4 45.2Q156.2 43.5 156.1 42.3Q156 41.2 156 40.7ZM163 32.9Q163 31.9 163.5 31.5Q164.1 31.1 165.4 31.1Q165.8 31.1 166.1 31.2Q166.5 31.3 166.7 31.5Q166.9 31.7 167.1 32.1Q167.2 32.4 167.3 33Q167.5 34.6 167.8 36.4Q168 38.2 168.3 40Q168.5 41.8 168.7 43.5Q168.9 45.2 169.1 46.7Q169.2 48.1 169.3 49.3Q169.4 50.4 169.4 51Q169.4 51.7 169.3 52.2Q169.2 52.6 168.9 52.9Q168.6 53.2 168.1 53.3Q167.7 53.4 167 53.4Q166.4 53.4 166 53.1Q165.6 52.8 165.6 52.1Q165.6 51.4 165.5 50.2Q165.4 49 165.2 47.6Q165 46.1 164.8 44.5Q164.5 42.8 164.3 41.3Q164 39.7 163.8 38.2Q163.6 36.7 163.4 35.6Q163.2 34.4 163.1 33.7Q163 33 163 32.9Z" fill="url(#wmg2)"/></svg></h1></div><p>もっとできるはず、をカタチにしていく</p></div>
+    <h2 id="auth-title">ログイン</h2>
+    <div id="auth-msg" class="auth-msg" hidden></div>
+    <form id="auth-form" novalidate>
+      <div class="field" id="auth-email-field">
+        <label for="auth-email">メールアドレス</label>
+        <input id="auth-email" type="email" autocomplete="email" inputmode="email" required>
+      </div>
+      <div class="field" id="auth-pass-field">
+        <label for="auth-pass">パスワード</label>
+        <input id="auth-pass" type="password" autocomplete="current-password" minlength="8" required>
+        <div class="hint" id="auth-pass-hint" hidden>8文字以上で設定してください</div>
+      </div>
+      <button class="btn btn-want" id="auth-submit" type="submit">ログイン</button>
+    </form>
+    <div class="auth-links">
+      <button class="link-btn" id="auth-switch" type="button">はじめての方は新規登録</button>
+      <button class="link-btn" id="auth-forgot" type="button">パスワードを忘れた方</button>
+    </div>
+  </div>
+</div>
+
+<div id="app" hidden>
+<header class="top">
+  <div class="top-row">
+    <div class="brand"><div class="brand-row"><svg class="mark" viewBox="0 0 40 28" aria-hidden="true"><circle cx="14" cy="14" r="11" fill="var(--yin)"/><circle cx="26" cy="14" r="11" fill="var(--yang)"/><path d="M20 4.78A11 11 0 0 1 20 23.22A11 11 0 0 1 20 4.78z" fill="var(--fusion)"/></svg><h1 class="wordmark-svg" aria-label="fulfill" style="--wm-h:58px"><svg viewBox="0 -5 224 85" role="img" aria-hidden="true"><defs><linearGradient id="wmg" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="224" y2="0"><stop offset="0" style="stop-color:var(--yin)"/><stop offset=".5" style="stop-color:var(--fusion)"/><stop offset="1" style="stop-color:var(--yang)"/></linearGradient></defs><g fill="none" stroke="url(#wmg)" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round"><path d="M47 8C43 2 33 0 27 6C23 10 22 18 22 28L22 40C22 58.8 37.9 74 57.5 74C77.1 74 93 58.8 93 40C96 25 97 5 87 5C76 5 75 27 85 40C91 48 110 58 146 34"/><path d="M4 52C14 47 27 41 41 35"/><path d="M151 8C147 2 137 0 131 6C127 10 126 18 126 28L126 40C126 58.8 142.8 74 163.5 74C184.2 74 201 58.8 201 40C204 25 205 5 195 5C184 5 183 27 193 40C199 48 208 54 218 47"/></g><path d="M53 47.4Q53 49.9 53.8 51.3Q54.5 52.6 56 52.6Q56.9 52.6 57.7 52.1Q58.4 51.6 59 50.6Q59.6 49.6 59.9 48.3Q60.2 47 60.2 45.4Q60.2 44.5 60.1 43.8Q60 43.1 59.9 42.5Q59.8 42 59.8 41.5Q59.7 41.1 59.7 40.7Q59.7 40.1 60.2 39.9Q60.7 39.6 61.8 39.6Q63.2 39.6 64 40.2Q64.7 40.9 64.7 42.1Q64.7 45.4 64.1 48Q63.4 50.6 62.3 52.4Q61.1 54.2 59.3 55.2Q57.6 56.2 55.5 56.2Q54 56.2 52.8 55.6Q51.5 55 50.6 53.8Q49.6 52.7 49.1 51.2Q48.6 49.6 48.6 47.8Q48.6 47.1 48.6 46.3Q48.7 45.5 48.8 44.5Q48.8 43.6 48.9 42.6Q49.1 41.5 49.2 40.2Q49.3 39.7 49.7 39.4Q50.2 39 50.9 39Q51.5 39 52.1 39.2Q52.6 39.3 53 39.5Q53.4 39.7 53.7 40Q53.9 40.3 53.9 40.7Q53.9 41 53.8 41.7Q53.6 42.4 53.5 43.3Q53.3 44.3 53.2 45.3Q53 46.4 53 47.4Z" fill="url(#wmg)"/><path d="M158.5 35.1Q158 35.1 157.5 34.9Q157 34.8 156.7 34.5Q156.3 34.2 156.1 33.8Q155.9 33.4 155.9 32.9Q155.9 32.2 156.6 31.7Q157.2 31.2 158.2 31.2Q158.7 31.2 159.2 31.4Q159.6 31.5 159.9 31.8Q160.3 32.1 160.5 32.5Q160.7 32.9 160.7 33.4Q160.7 34.2 160.1 34.6Q159.5 35.1 158.5 35.1ZM156 40.7Q156 40.1 156.5 39.7Q157.1 39.2 158 39.2Q159.7 39.2 159.8 40.4Q159.9 41.2 160 42.2Q160.1 43.2 160.1 44.3Q160.2 45.4 160.3 46.6Q160.4 47.8 160.4 49Q160.5 50.2 160.5 51.2Q160.5 52.3 160.5 53.2Q160.5 54.1 159.9 54.6Q159.2 55.1 158 55.1Q157.4 55.1 157.1 54.8Q156.7 54.5 156.7 54Q156.7 51.4 156.6 49.2Q156.5 47 156.4 45.2Q156.2 43.5 156.1 42.3Q156 41.2 156 40.7ZM163 32.9Q163 31.9 163.5 31.5Q164.1 31.1 165.4 31.1Q165.8 31.1 166.1 31.2Q166.5 31.3 166.7 31.5Q166.9 31.7 167.1 32.1Q167.2 32.4 167.3 33Q167.5 34.6 167.8 36.4Q168 38.2 168.3 40Q168.5 41.8 168.7 43.5Q168.9 45.2 169.1 46.7Q169.2 48.1 169.3 49.3Q169.4 50.4 169.4 51Q169.4 51.7 169.3 52.2Q169.2 52.6 168.9 52.9Q168.6 53.2 168.1 53.3Q167.7 53.4 167 53.4Q166.4 53.4 166 53.1Q165.6 52.8 165.6 52.1Q165.6 51.4 165.5 50.2Q165.4 49 165.2 47.6Q165 46.1 164.8 44.5Q164.5 42.8 164.3 41.3Q164 39.7 163.8 38.2Q163.6 36.7 163.4 35.6Q163.2 34.4 163.1 33.7Q163 33 163 32.9Z" fill="url(#wmg)"/></svg></h1></div><div class="tagline">もっとできるはず、をカタチにしていく</div></div>
+    <button class="btn btn-accent" id="add-btn" type="button">＋ 一歩を追加</button>
+  </div>
+  <nav class="tabs" role="tablist" aria-label="表示の切り替え">
+    <button class="tab" role="tab" type="button" data-tab="tasks" id="tab-btn-tasks" aria-controls="pane-tasks" aria-selected="true">一歩</button>
+    <button class="tab" role="tab" type="button" data-tab="habits" id="tab-btn-habits" aria-controls="pane-habits" aria-selected="false">習慣</button>
+    <button class="tab" role="tab" type="button" data-tab="wishes" id="tab-btn-wishes" aria-controls="pane-wishes" aria-selected="false">望み</button>
+    <button class="tab" role="tab" type="button" data-tab="thanks" id="tab-btn-thanks" aria-controls="pane-thanks" aria-selected="false">ありがとう</button>
+  </nav>
+  <div class="top-row" style="margin-top:8px">
+    <div class="month-nav">
+      <button class="icon-btn" id="prev-month" type="button" aria-label="前の月">◀</button>
+      <div class="label" id="month-label">—</div>
+      <button class="icon-btn" id="next-month" type="button" aria-label="次の月">▶</button>
+      <button class="today-link" id="this-month" type="button">今月へ</button>
+    </div>
+    <div class="stats" id="stats">読み込み中…</div>
+  </div>
+</header>
+
+<main>
+ <div id="pane-tasks" role="tabpanel" aria-labelledby="tab-btn-tasks">
+  <section class="purpose" aria-labelledby="purpose-h">
+    <div class="eyebrow" id="purpose-h">どんな月にしたい？</div>
+    <div id="theme-view"></div>
+    <div class="divider"></div>
+    <div class="section-head">
+      <h2>今月のwant</h2>
+      <span class="sub">一歩一歩は、これを叶えるための手段</span>
+    </div>
+    <div class="want-list" id="want-list"></div>
+    <form class="add-want-row" id="add-want-form">
+      <input type="text" id="new-want" placeholder="例）自分の力で集客できている実感を持つ" aria-label="wantを追加">
+      <button class="btn btn-want btn-sm" type="submit">追加</button>
+    </form>
+  </section>
+
+  <section aria-labelledby="tasks-h">
+    <div class="section-head">
+      <h2 id="tasks-h">今月の一歩</h2>
+      <span class="sub" id="unlinked-note"></span>
+    </div>
+    <div id="filter-slot"></div>
+    <div id="task-area"><div class="notice">読み込み中…</div></div>
+  </section>
+ </div>
+
+ <div id="pane-habits" role="tabpanel" aria-labelledby="tab-btn-habits" hidden>
+  <section aria-labelledby="habits-h">
+    <div class="section-head">
+      <h2 id="habits-h">続けたい習慣</h2>
+      <span class="sub" id="habits-sub">日付のマスを押すと、あとからでも記録できます</span>
+    </div>
+    <div class="habit-list" id="habit-list"><div class="notice">読み込み中…</div></div>
+  </section>
+ </div>
+
+ <div id="pane-wishes" role="tabpanel" aria-labelledby="tab-btn-wishes" hidden>
+  <section class="wish-hero" aria-labelledby="wish-h">
+    <div class="eyebrow" id="wish-year-label">今年のうちに</div>
+    <h2 id="wish-h">思いついた望みを、<wbr>ここに溜めておく</h2>
+    <div class="days-left" id="days-left"></div>
+    <form class="wish-add" id="wish-add-form">
+      <input type="text" id="new-wish" placeholder="例）家族で温泉に行く" aria-label="望みを追加" autocomplete="off">
+      <button class="btn btn-wish btn-sm" type="submit">溜める</button>
+    </form>
+  </section>
+  <section aria-labelledby="wish-list-h">
+    <div class="section-head"><h2 id="wish-list-h">今年の望み</h2><span class="sub" id="wish-sub"></span></div>
+    <div id="wish-list"><div class="notice">読み込み中…</div></div>
+    <div id="wish-done-slot"></div>
+  </section>
+ </div>
+
+ <div id="pane-thanks" role="tabpanel" aria-labelledby="tab-btn-thanks" hidden>
+  <section class="thanks-card" aria-labelledby="thanks-h">
+    <div class="eyebrow" id="thanks-h">今日のありがとう</div>
+    <p class="prompt" id="thanks-prompt"></p>
+    <button class="link-btn" type="button" id="next-prompt">別の問いにする</button>
+    <form id="thanks-form" class="thanks-form">
+      <div class="row2">
+        <div class="field">
+          <label for="t-person">誰に</label>
+          <input type="text" id="t-person" list="people-list" required placeholder="例）パートナー、同僚の田中さん" autocomplete="off">
+        </div>
+        <div class="field">
+          <label for="t-date">日付</label>
+          <input type="date" id="t-date" required>
+        </div>
+      </div>
+      <div class="field">
+        <label for="t-what">してもらったこと</label>
+        <textarea id="t-what" required placeholder="例）出張の間、子どもたちを見てくれていた"></textarea>
+      </div>
+      <div class="field">
+        <label for="t-feel">どう助かった？どう嬉しかった？（任意）</label>
+        <textarea id="t-feel" placeholder="例）おかげで研修準備に集中できた"></textarea>
+      </div>
+      <div class="submit-row"><button class="btn btn-thanks" type="submit">書き留める</button></div>
+    </form>
+    <datalist id="people-list"></datalist>
+  </section>
+
+  <div id="lookback-slot"></div>
+
+  <section aria-labelledby="people-h">
+    <div class="section-head"><h2 id="people-h">支えてくれた人</h2><span class="sub" id="people-sub"></span></div>
+    <div class="people" id="people-chips"></div>
+  </section>
+
+  <section aria-labelledby="thanks-list-h">
+    <div class="section-head"><h2 id="thanks-list-h">ありがとうの記録</h2><span class="sub" id="told-sub"></span></div>
+    <div id="thanks-filter"></div>
+    <div id="thanks-list"><div class="notice">読み込み中…</div></div>
+  </section>
+ </div>
+</main>
+
+<!-- task modal -->
+<div class="overlay" id="task-overlay" hidden>
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="task-modal-title">
+    <h2 id="task-modal-title">一歩を追加</h2>
+    <form id="task-form">
+      <div class="field">
+        <label for="f-title">やること</label>
+        <input type="text" id="f-title" required placeholder="例）菊池たまみさんに日程候補を送る">
+      </div>
+      <div class="field">
+        <label for="f-want">どのwantのため？</label>
+        <select id="f-want"></select>
+        <div class="hint">目的につながるwantを選んでおくと、wantごとの進み具合が見えます</div>
+      </div>
+      <div class="row2">
+        <div class="field">
+          <label for="f-month">月</label>
+          <input type="month" id="f-month" required>
+        </div>
+        <div class="field">
+          <label for="f-due">期限</label>
+          <input type="date" id="f-due">
+        </div>
+      </div>
+      <div class="row2">
+        <div class="field">
+          <label for="f-priority">優先度</label>
+          <select id="f-priority">
+            <option value="">未設定</option>
+            <option value="high">高</option>
+            <option value="medium">中</option>
+            <option value="low">低</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="f-category">カテゴリ</label>
+          <select id="f-category">
+            <option value="">なし</option>
+            <option value="対応中案件">対応中案件</option>
+            <option value="Slack">Slack</option>
+            <option value="日程調整">日程調整</option>
+            <option value="新規関係構築">新規関係構築</option>
+            <option value="個人">個人</option>
+            <option value="その他">その他</option>
+          </select>
+        </div>
+      </div>
+      <label class="check-field" for="f-focus"><input type="checkbox" id="f-focus"> 今日のフォーカスにする</label>
+      <div class="field">
+        <label for="f-note">メモ（任意）</label>
+        <textarea id="f-note"></textarea>
+      </div>
+      <div class="modal-actions">
+        <button type="button" class="btn btn-danger btn-sm" id="task-delete" hidden>削除</button>
+        <div class="right">
+          <button type="button" class="btn btn-ghost" id="task-cancel">キャンセル</button>
+          <button type="submit" class="btn btn-accent">保存</button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- wish modal -->
+<div class="overlay" id="wish-overlay" hidden>
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="wish-modal-title">
+    <h2 id="wish-modal-title">叶えたいことを編集</h2>
+    <form id="wish-form">
+      <div class="field"><label for="ws-title">叶えたいこと</label><input type="text" id="ws-title" required></div>
+      <div class="field"><label for="ws-note">なぜ叶えたい？叶ったらどうなる？（任意）</label><textarea id="ws-note"></textarea></div>
+      <label class="check-field" for="ws-done"><input type="checkbox" id="ws-done"> 叶った</label>
+      <div class="modal-actions">
+        <button type="button" class="btn btn-danger btn-sm" id="wish-delete">削除</button>
+        <div class="right">
+          <button type="button" class="btn btn-ghost" id="wish-cancel">キャンセル</button>
+          <button type="submit" class="btn btn-wish">保存</button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- habit modal -->
+<div class="overlay" id="habit-overlay" hidden>
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="habit-modal-title">
+    <h2 id="habit-modal-title">習慣を追加</h2>
+    <form id="habit-form">
+      <div class="field">
+        <label for="h-name">習慣</label>
+        <input type="text" id="h-name" required placeholder="例）ストレッチ">
+      </div>
+      <div class="row2">
+        <div class="field">
+          <label for="h-freq">ペース</label>
+          <select id="h-freq">
+            <option value="daily">毎日</option>
+            <option value="weekly">週に◯回</option>
+            <option value="monthly">月に◯回</option>
+          </select>
+        </div>
+        <div class="field" id="h-target-field">
+          <label for="h-target">回数</label>
+          <input type="number" id="h-target" min="1" max="31" value="2" inputmode="numeric">
+        </div>
+      </div>
+      <div class="field">
+        <label for="h-want">どのwantのため？（任意）</label>
+        <select id="h-want"></select>
+      </div>
+      <div class="field">
+        <label for="h-note">メモ（任意）</label>
+        <textarea id="h-note" placeholder="例）寝る前に10分"></textarea>
+      </div>
+      <div class="modal-actions">
+        <button type="button" class="btn btn-danger btn-sm" id="habit-delete" hidden>この習慣をやめる</button>
+        <div class="right">
+          <button type="button" class="btn btn-ghost" id="habit-cancel">キャンセル</button>
+          <button type="submit" class="btn btn-habit">保存</button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- thanks modal -->
+<div class="overlay" id="thanks-overlay" hidden>
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="thanks-modal-title">
+    <h2 id="thanks-modal-title">ありがとうを編集</h2>
+    <form id="thanks-edit-form">
+      <div class="row2">
+        <div class="field"><label for="te-person">誰に</label><input type="text" id="te-person" list="people-list" required autocomplete="off"></div>
+        <div class="field"><label for="te-date">日付</label><input type="date" id="te-date" required></div>
+      </div>
+      <div class="field"><label for="te-what">してもらったこと</label><textarea id="te-what" required></textarea></div>
+      <div class="field"><label for="te-feel">どう助かった？どう嬉しかった？</label><textarea id="te-feel"></textarea></div>
+      <label class="check-field" for="te-told"><input type="checkbox" id="te-told"> 本人に感謝を伝えた</label>
+      <div class="modal-actions">
+        <button type="button" class="btn btn-danger btn-sm" id="thanks-delete">削除</button>
+        <div class="right">
+          <button type="button" class="btn btn-ghost" id="thanks-cancel">キャンセル</button>
+          <button type="submit" class="btn btn-thanks">保存</button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- want modal -->
+<div class="overlay" id="want-overlay" hidden>
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="want-modal-title">
+    <h2 id="want-modal-title">wantを編集</h2>
+    <form id="want-form">
+      <div class="field">
+        <label for="w-title">want</label>
+        <input type="text" id="w-title" required>
+      </div>
+      <div class="field">
+        <label for="w-note">なぜそうしたい？（任意）</label>
+        <textarea id="w-note"></textarea>
+      </div>
+      <div class="field">
+        <label for="w-month">月</label>
+        <input type="month" id="w-month" required>
+      </div>
+      <div class="modal-actions">
+        <button type="button" class="btn btn-danger btn-sm" id="want-delete">削除</button>
+        <div class="right">
+          <button type="button" class="btn btn-ghost" id="want-cancel">キャンセル</button>
+          <button type="submit" class="btn btn-want">保存</button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div class="toast" id="toast" hidden role="status">
+  <span id="toast-msg"></span>
+  <button id="toast-undo" type="button">元に戻す</button>
+</div>
+
+<footer class="app-foot">
+  <span id="account-email"></span>
+  <button class="link-btn" id="logout-btn" type="button">ログアウト</button>
+</footer>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.3/dist/umd/supabase.js"></script>
+<script>
+/* ===== Supabase 接続設定 ===== */
+var SUPABASE_URL = 'https://kwbgngyaanbvipbyqbzh.supabase.co';
+var SUPABASE_KEY = 'sb_publishable_1VzEt0_ROkC-Col_PwBfxg_3HAqqvMp';
+
+(function(){
+  var $ = function(id){ return document.getElementById(id); };
+  if(!window.supabase){ $('boot-screen').textContent = '読み込みに失敗しました。通信状況を確認して開き直してください。'; return; }
+  var sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
+    auth:{ persistSession:true, autoRefreshToken:true, detectSessionInUrl:true }
+  });
+  window.fulfillSupabase = sb;
+
+  /* ---------- データ層：アプリ側の db.collection(...) をそのまま Supabase で動かす ---------- */
+  function newId(){
+    if(window.crypto && crypto.randomUUID) return crypto.randomUUID().replace(/-/g,'').slice(0,20);
+    return Date.now().toString(36) + Math.random().toString(36).slice(2,10);
+  }
+  function clone(o){ return JSON.parse(JSON.stringify(o == null ? {} : o)); }
+
+  function makeDb(uid){
+    var cache = {};      // coll -> id -> data
+    var stamp = {};      // coll/id -> updated_at (ISO) of the newest version we know
+    var listeners = {};  // coll -> [ {cb, err} ]
+    var ready = false;
+
+    function snap(c){
+      var m = cache[c] || {};
+      return { docs: Object.keys(m).map(function(id){ var d = m[id]; return { id:id, data:function(){ return d; } }; }) };
+    }
+    function emit(c){ if(!ready) return; var s = snap(c); (listeners[c]||[]).forEach(function(l){ try{ l.cb(s); }catch(e){ console.error(e); } }); }
+    function emitAll(){ Object.keys(listeners).forEach(emit); }
+    function check(r){ if(r && r.error) throw r.error; return r; }
+
+    function reloadColl(c){
+      return sb.from('items').select('id,data,updated_at').eq('coll', c).then(check).then(function(r){
+        cache[c] = {};
+        r.data.forEach(function(row){ cache[c][row.id] = row.data || {}; stamp[c+'/'+row.id] = row.updated_at; });
+        emit(c);
+      }).catch(function(e){ console.error(e); });
+    }
+    function put(c, id, data){
+      var ts = new Date().toISOString();
+      (cache[c] = cache[c] || {})[id] = data;
+      stamp[c+'/'+id] = ts;
+      emit(c);
+      return sb.from('items').upsert({ user_id:uid, coll:c, id:id, data:data, updated_at:ts }).then(check)
+        .catch(function(e){ reloadColl(c); throw e; });
+    }
+    function remove(c, id){
+      if(cache[c]) delete cache[c][id];
+      stamp[c+'/'+id] = new Date().toISOString();
+      emit(c);
+      return sb.from('items').delete().match({ user_id:uid, coll:c, id:id }).then(check)
+        .catch(function(e){ reloadColl(c); throw e; });
+    }
+
+    var api = {
+      collection: function(c){
+        return {
+          doc: function(id){
+            return {
+              set: function(d){ return put(c, id, clone(d)); },
+              update: function(p){ var cur = Object.assign({}, (cache[c]||{})[id] || {}, clone(p)); return put(c, id, cur); },
+              delete: function(){ return remove(c, id); }
+            };
+          },
+          add: function(d){ var id = newId(); return put(c, id, clone(d)).then(function(){ return { id:id }; }); },
+          onSnapshot: function(cb, err){
+            (listeners[c] = listeners[c] || []).push({ cb:cb, err:err });
+            if(ready){ try{ cb(snap(c)); }catch(e){ console.error(e); } }
+            return function(){ listeners[c] = (listeners[c]||[]).filter(function(l){ return l.cb !== cb; }); };
+          }
+        };
+      }
+    };
+
+    // 初回の読み込み（1,000件ずつ全件）
+    function loadAll(){
+      var rows = [], page = 1000;
+      function next(from){
+        return sb.from('items').select('coll,id,data,updated_at').order('coll').order('id').range(from, from + page - 1).then(check).then(function(r){
+          rows = rows.concat(r.data);
+          if(r.data.length === page) return next(from + page);
+        });
+      }
+      return next(0).then(function(){
+        cache = {};
+        rows.forEach(function(row){ (cache[row.coll] = cache[row.coll] || {})[row.id] = row.data || {}; stamp[row.coll+'/'+row.id] = row.updated_at; });
+      });
+    }
+
+    // 他の端末での変更をリアルタイムで反映
+    function subscribe(){
+      sb.channel('items-' + uid)
+        .on('postgres_changes', { event:'*', schema:'public', table:'items', filter:'user_id=eq.' + uid }, function(p){
+          var row = p.eventType === 'DELETE' ? p.old : p.new;
+          if(!row || !row.coll || !row.id) return;
+          var key = row.coll + '/' + row.id;
+          if(p.eventType === 'DELETE'){
+            if(cache[row.coll] && cache[row.coll][row.id]){ delete cache[row.coll][row.id]; emit(row.coll); }
+            return;
+          }
+          if(stamp[key] && row.updated_at && new Date(row.updated_at) < new Date(stamp[key])) return; // 古い通知は無視
+          stamp[key] = row.updated_at;
+          (cache[row.coll] = cache[row.coll] || {})[row.id] = row.data || {};
+          emit(row.coll);
+        })
+        .subscribe();
+    }
+
+    // アプリに戻ってきたとき（iPhoneで再表示など）に最新化
+    document.addEventListener('visibilitychange', function(){
+      if(document.visibilityState === 'visible' && ready){
+        loadAll().then(emitAll).catch(function(e){ console.error(e); });
+      }
+    });
+
+    return loadAll().then(function(){ ready = true; subscribe(); emitAll(); return api; });
+  }
+
+  /* ---------- ログイン画面 ---------- */
+  var mode = 'login'; // login | signup | forgot | recovery
+  var started = false;
+
+  function msg(text, kind){
+    var el = $('auth-msg');
+    if(!text){ el.hidden = true; return; }
+    el.textContent = text; el.className = 'auth-msg ' + (kind || 'err'); el.hidden = false;
+  }
+  function setMode(m){
+    mode = m; msg('');
+    var t = { login:'ログイン', signup:'新規登録', forgot:'パスワードの再設定', recovery:'新しいパスワードを設定' }[m];
+    $('auth-title').textContent = t;
+    $('auth-submit').textContent = { login:'ログイン', signup:'登録する', forgot:'再設定メールを送る', recovery:'パスワードを保存' }[m];
+    $('auth-email-field').hidden = m === 'recovery';
+    $('auth-pass-field').hidden = m === 'forgot';
+    $('auth-pass-hint').hidden = !(m === 'signup' || m === 'recovery');
+    $('auth-pass').setAttribute('autocomplete', m === 'login' ? 'current-password' : 'new-password');
+    $('auth-switch').hidden = m === 'recovery';
+    $('auth-switch').textContent = m === 'login' ? 'はじめての方は新規登録' : 'ログイン画面に戻る';
+    $('auth-forgot').hidden = m !== 'login';
+  }
+  function showAuth(m){
+    $('boot-screen').hidden = true; $('app').hidden = true; $('auth-screen').hidden = false;
+    setMode(m || 'login');
+  }
+  function jpError(e){
+    var s = (e && (e.message || e.error_description)) || '';
+    if(/Invalid login credentials/i.test(s)) return 'メールアドレスかパスワードが違います';
+    if(/Email not confirmed/i.test(s)) return 'メールアドレスの確認がまだです。届いたメールのリンクを押してから、もう一度ログインしてください';
+    if(/already registered|already been registered/i.test(s)) return 'このメールアドレスはすでに登録されています。ログインしてください';
+    if(/Password should be|at least/i.test(s)) return 'パスワードは8文字以上にしてください';
+    if(/rate limit|security purposes/i.test(s)) return '短時間に操作が続きました。少し待ってからもう一度お試しください';
+    if(/invalid.*email|email.*invalid/i.test(s)) return 'メールアドレスの形式を確認してください';
+    return '処理できませんでした。少し待ってからもう一度お試しください' + (s ? '（' + s + '）' : '');
+  }
+  function redirectUrl(){ return location.origin + location.pathname; }
+
+  $('auth-switch').onclick = function(){ setMode(mode === 'login' ? 'signup' : 'login'); };
+  $('auth-forgot').onclick = function(){ setMode('forgot'); };
+
+  $('auth-form').addEventListener('submit', function(e){
+    e.preventDefault();
+    var email = $('auth-email').value.trim(), pass = $('auth-pass').value;
+    if(mode !== 'recovery' && !email){ msg('メールアドレスを入力してください'); return; }
+    if((mode === 'login' || mode === 'signup' || mode === 'recovery') && !pass){ msg('パスワードを入力してください'); return; }
+    if((mode === 'signup' || mode === 'recovery') && pass.length < 8){ msg('パスワードは8文字以上にしてください'); return; }
+    var btn = $('auth-submit'); btn.disabled = true; msg('');
+    var p;
+    if(mode === 'login') p = sb.auth.signInWithPassword({ email:email, password:pass });
+    else if(mode === 'signup') p = sb.auth.signUp({ email:email, password:pass, options:{ emailRedirectTo:redirectUrl() } });
+    else if(mode === 'forgot') p = sb.auth.resetPasswordForEmail(email, { redirectTo:redirectUrl() });
+    else p = sb.auth.updateUser({ password:pass });
+    p.then(function(r){
+      btn.disabled = false;
+      if(r.error){ msg(jpError(r.error)); return; }
+      if(mode === 'signup'){
+        if(r.data && r.data.session) return; // 確認メールなしの設定ならそのまま開始
+        setMode('login'); $('auth-pass').value = '';
+        msg('確認メールを送りました。メール内のリンクを押してから、ここでログインしてください。', 'ok');
+      } else if(mode === 'forgot'){
+        msg('再設定用のメールを送りました。メール内のリンクから新しいパスワードを設定してください。', 'ok');
+      } else if(mode === 'recovery'){
+        $('auth-pass').value = '';
+        start(r.data.user);
+      }
+    }).catch(function(err){ btn.disabled = false; msg(jpError(err)); });
+  });
+
+  /* ---------- 起動 ---------- */
+  function start(user){
+    if(started || !user) return;
+    started = true;
+    $('boot-screen').hidden = true; $('auth-screen').hidden = true; $('app').hidden = false;
+    $('account-email').textContent = user.email || '';
+    window.fulfillDbPromise = makeDb(user.id);
+    if(window.__fulfillBoot) window.__fulfillBoot();
+  }
+  $('logout-btn').onclick = function(){
+    if(!confirm('ログアウトしますか？')) return;
+    sb.auth.signOut().finally(function(){ location.replace(redirectUrl()); });
+  };
+
+  sb.auth.onAuthStateChange(function(event, session){
+    if(event === 'PASSWORD_RECOVERY'){ showAuth('recovery'); return; }
+    if(event === 'SIGNED_IN' && session) setTimeout(function(){ if(mode !== 'recovery') start(session.user); }, 0);
+  });
+  sb.auth.getSession().then(function(r){
+    var s = r.data && r.data.session;
+    if(mode === 'recovery') return;
+    if(s) start(s.user); else showAuth('login');
+  }).catch(function(){ showAuth('login'); });
+})();
+</script>
+
+<script>
+(function(){
+  "use strict";
+
+  var db = null;
+  var tasks = [], wants = [], months = {};
+  var loaded = {tasks:false, wants:false, months:false};
+  var viewMonth = thisMonth();
+  var editingTheme = false;
+  var editingTaskId = null, editingWantId = null;
+  var doneOpen = false;
+  var wantFilter = null;
+  var toastTimer = null;
+  var thanks = [];
+  var tab = 'tasks';
+  var personFilter = null;
+  var promptOffset = 0, lookbackOffset = 0;
+  var editingThanksId = null;
+  var habits = [], habitLogs = {}, editingHabitId = null, habitLoaded = false;
+  var logChains = {};
+  var wishes = [], wishLoaded = false, editingWishId = null, wishDoneOpen = false;
+  var PROMPTS = [
+    '今日、誰かがあなたのために時間を使ってくれましたか？',
+    '何気ない一言で、気持ちが軽くなった瞬間はありましたか？',
+    '当たり前だと思っていたけど、実は誰かのおかげだったことは？',
+    '今日の仕事を、見えないところで支えてくれた人は？',
+    '家族がしてくれた、小さなことを一つ思い出すと？',
+    '教えてもらったこと、気づかせてもらったことは？',
+    '待ってくれた人、許してくれた人はいましたか？',
+    '人やチャンスをつないでくれた人は？',
+    '笑わせてくれた人、場を明るくしてくれた人は？',
+    '信じて任せてくれた人は？',
+    '話を最後まで聞いてくれた人は？',
+    '移動や食事、今日使ったものの向こうにいる人は？'
+  ];
+
+  function $(id){ return document.getElementById(id); }
+
+  function pad(n){ return (n<10?'0':'')+n; }
+  function localDateStr(d){ return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate()); }
+  function todayStr(){ return localDateStr(new Date()); }
+  function thisMonth(){ return todayStr().slice(0,7); }
+  function shiftMonth(m, delta){
+    var y = +m.slice(0,4), mo = +m.slice(5,7) - 1 + delta;
+    var d = new Date(y, mo, 1);
+    return d.getFullYear()+'-'+pad(d.getMonth()+1);
+  }
+  function monthLabel(m){ return +m.slice(0,4)+'年'+(+m.slice(5,7))+'月'; }
+  function fmtDate(s){ return s ? (+s.slice(5,7))+'/'+(+s.slice(8,10)) : ''; }
+  function esc(s){
+    return String(s==null?'':s).replace(/[&<>"']/g,function(c){
+      return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];
+    });
+  }
+  function taskMonth(t){
+    if(t.month) return t.month;
+    if(t.due) return t.due.slice(0,7);
+    if(t.createdAt) return localDateStr(new Date(t.createdAt)).slice(0,7);
+    return thisMonth();
+  }
+  function wantById(id){ return wants.find(function(w){return w.id===id;}); }
+  function prLabel(p){ return p==='high'?'優先度高':p==='medium'?'優先度中':p==='low'?'優先度低':''; }
+
+  /* ---------- render ---------- */
+  function render(){
+    $('month-label').textContent = monthLabel(viewMonth);
+    $('this-month').hidden = viewMonth === thisMonth();
+    renderTheme();
+    renderWants();
+    renderTasks();
+    renderHabits();
+    renderWishes();
+    renderThanks();
+  }
+
+  function renderTheme(){
+    var box = $('theme-view');
+    var theme = (months[viewMonth] && months[viewMonth].theme) || '';
+    if(editingTheme){
+      box.innerHTML = '<div class="theme-edit"><textarea id="theme-input" aria-label="どんな月にしたいか" placeholder="例）焦らず、関係を深める月にする">'+esc(theme)+'</textarea>'
+        + '<div class="actions"><button class="btn btn-ghost btn-sm" type="button" id="theme-cancel">キャンセル</button>'
+        + '<button class="btn btn-want btn-sm" type="button" id="theme-save">保存</button></div></div>';
+      var ta = $('theme-input'); ta.focus();
+      $('theme-cancel').onclick = function(){ editingTheme=false; renderTheme(); };
+      $('theme-save').onclick = function(){
+        var v = ta.value.trim();
+        editingTheme=false;
+        if(db && v !== theme){
+          months[viewMonth] = {theme:v};
+          db.collection('months').doc(viewMonth).set({theme:v, updatedAt:Date.now()}).catch(writeFailed);
+        }
+        renderTheme();
+      };
+    } else {
+      box.innerHTML = theme
+        ? '<p class="theme-text" id="theme-text" tabindex="0" role="button">'+esc(theme)+'</p>'
+        : '<p class="theme-text placeholder" id="theme-text" tabindex="0" role="button">'+monthLabel(viewMonth)+'をどんな月にしたいか、ひとことで書いてみましょう（タップして入力）</p>';
+      var el = $('theme-text');
+      el.onclick = function(){ editingTheme=true; renderTheme(); };
+      el.onkeydown = function(e){ if(e.key==='Enter'){ editingTheme=true; renderTheme(); } };
+    }
+  }
+
+  function renderWants(){
+    var list = wants.filter(function(w){return w.month===viewMonth;})
+      .sort(function(a,b){ return (a.createdAt||0)-(b.createdAt||0); });
+    var box = $('want-list');
+    if(list.length===0){
+      box.innerHTML = '<div class="empty">まだwantがありません。<br>今月こうなっていたら嬉しい、という状態を下から追加してください。</div>';
+      return;
+    }
+    box.innerHTML = list.map(function(w){
+      var linked = tasks.filter(function(t){return t.wantId===w.id;});
+      var doneN = linked.filter(function(t){return t.status==='done';}).length;
+      var pct = linked.length ? Math.round(doneN/linked.length*100) : 0;
+      return '<div class="want'+(w.achieved?' achieved':'')+(wantFilter===w.id?' active':'')+'" data-id="'+w.id+'" tabindex="0" role="button" aria-pressed="'+(wantFilter===w.id)+'">'
+        + '<button class="want-mark" type="button" data-id="'+w.id+'" aria-label="叶った">'+(w.achieved?'✓':'')+'</button>'
+        + '<div class="want-body"><div class="want-title">'+esc(w.title)+'</div>'
+        + (w.note?'<div class="want-note">'+esc(w.note)+'</div>':'')
+        + '<div class="want-progress">'
+        + (linked.length
+            ? '<div class="bar"><i style="width:'+pct+'%"></i></div><span>一歩 '+doneN+'/'+linked.length+'</span>'
+            : '<span>つながっている一歩はまだありません</span>')
+        + '</div></div>'
+        + '<button class="want-edit-btn" type="button" data-id="'+w.id+'">編集</button>'
+        + '</div>';
+    }).join('');
+
+    box.querySelectorAll('.want').forEach(function(el){
+      el.onclick = function(){ var id=el.getAttribute('data-id'); wantFilter = (wantFilter===id)?null:id; renderWants(); renderTasks(); };
+      el.onkeydown = function(e){ if(e.key==='Enter'){ el.onclick(); } };
+    });
+    box.querySelectorAll('.want-mark').forEach(function(el){
+      el.onclick = function(e){ e.stopPropagation(); toggleWant(el.getAttribute('data-id')); };
+    });
+    box.querySelectorAll('.want-edit-btn').forEach(function(el){
+      el.onclick = function(e){ e.stopPropagation(); openWantEdit(el.getAttribute('data-id')); };
+    });
+  }
+
+  function renderTasks(){
+    var today = todayStr(), cur = thisMonth();
+    var inMonth = tasks.filter(function(t){ return taskMonth(t)===viewMonth; });
+    var carry = (viewMonth===cur) ? tasks.filter(function(t){ return t.status!=='done' && taskMonth(t) < viewMonth; }) : [];
+    var openT = inMonth.filter(function(t){return t.status!=='done';});
+    var doneT = inMonth.filter(function(t){return t.status==='done';});
+
+    if(tab==='tasks') $('stats').innerHTML = 'これから <b>'+openT.length+'</b> ／ やりきった <b>'+doneT.length+'</b>'
+      + (carry.length ? ' ／ 持ち越し <b>'+carry.length+'</b>' : '');
+
+    var unlinked = openT.filter(function(t){ return !t.wantId || !wantById(t.wantId); }).length;
+    $('unlinked-note').textContent = unlinked ? 'wantにつながっていない一歩 '+unlinked+'件' : '';
+
+    var fw = wantFilter && wantById(wantFilter);
+    if(wantFilter && !fw){ wantFilter = null; }
+    $('filter-slot').innerHTML = fw
+      ? '<div class="filter-note"><span>「'+esc(fw.title)+'」につながる一歩だけ表示中</span><button type="button" id="clear-filter">すべて表示</button></div>'
+      : '';
+    if(fw){ $('clear-filter').onclick = function(){ wantFilter=null; renderWants(); renderTasks(); }; }
+
+    function pass(t){ return !wantFilter || t.wantId===wantFilter; }
+    openT = openT.filter(pass); doneT = doneT.filter(pass); carry = carry.filter(pass);
+
+    var focus = (viewMonth===cur) ? tasks.filter(function(t){ return t.status!=='done' && t.focusDate===today && pass(t); }) : [];
+    var focusIds = {}; focus.forEach(function(t){ focusIds[t.id]=true; });
+    function notFocus(t){ return !focusIds[t.id]; }
+    var openRest = openT.filter(notFocus); carry = carry.filter(notFocus);
+
+    var overdue=[], dueToday=[], upcoming=[], noDate=[];
+    openRest.forEach(function(t){
+      if(!t.due) noDate.push(t);
+      else if(t.due < today) overdue.push(t);
+      else if(t.due === today) dueToday.push(t);
+      else upcoming.push(t);
+    });
+    function byDue(a,b){ return a.due<b.due?-1:a.due>b.due?1:0; }
+    function byCreated(a,b){ return (a.createdAt||0)-(b.createdAt||0); }
+    function byPr(a,b){ var r={high:0,medium:1,low:2,'':3}; return (r[a.priority||'']-r[b.priority||'']) || byCreated(a,b); }
+    overdue.sort(byDue); upcoming.sort(byDue); dueToday.sort(byPr); noDate.sort(byPr);
+    carry.sort(byCreated);
+    doneT.sort(function(a,b){ return (b.completedAt||0)-(a.completedAt||0); });
+
+    focus.sort(byPr);
+    var h = '';
+    h += group('今日のフォーカス', focus, 'focus');
+    h += group('先月までの持ち越し', carry, 'carry', true);
+    h += group('期限超過', overdue, 'overdue');
+    h += group('今日', dueToday);
+    h += group('期限あり', upcoming);
+    h += group('期限なし', noDate);
+    if(!openT.length && !carry.length && !focus.length){
+      h += '<div class="empty">'+(wantFilter ? 'このwantにつながる、まだの一歩はありません。' : monthLabel(viewMonth)+'の、まだの一歩はありません。')+'</div>';
+    }
+    h += '<button class="done-toggle'+(doneOpen?' open':'')+'" id="done-toggle" type="button" aria-expanded="'+doneOpen+'">'
+      + '<span>'+monthLabel(viewMonth)+'にやりきったこと（'+doneT.length+'件）</span><span class="chev">▾</span></button>';
+    if(doneOpen){
+      h += '<div class="done-list">' + (doneT.length
+        ? '<div class="task-list">'+doneT.map(function(t){return taskRow(t,false);}).join('')+'</div>'
+        : '<div class="empty">ここに、やりきったことが積み上がっていきます。</div>') + '</div>';
+    }
+    $('task-area').innerHTML = h;
+
+    $('done-toggle').onclick = function(){ doneOpen=!doneOpen; renderTasks(); };
+    $('task-area').querySelectorAll('.check').forEach(function(el){
+      el.onclick = function(e){ e.stopPropagation(); toggleDone(el.getAttribute('data-id')); };
+    });
+    $('task-area').querySelectorAll('.carry-btn').forEach(function(el){
+      el.onclick = function(e){ e.stopPropagation(); moveToMonth(el.getAttribute('data-id'), viewMonth); };
+    });
+    $('task-area').querySelectorAll('.task').forEach(function(el){
+      el.onclick = function(){ openTaskEdit(el.getAttribute('data-id')); };
+      el.onkeydown = function(e){ if(e.key==='Enter' && e.target===el){ openTaskEdit(el.getAttribute('data-id')); } };
+    });
+  }
+
+  function group(title, list, kind, isCarry){
+    if(!list.length) return '';
+    return '<section class="group"><div class="group-title'+(kind?' '+kind:'')+'">'+title+'<span class="count">'+list.length+'</span></div>'
+      + '<div class="task-list">'+list.map(function(t){return taskRow(t,isCarry);}).join('')+'</div></section>';
+  }
+
+  function taskRow(t, isCarry){
+    var today = todayStr();
+    var isDone = t.status==='done';
+    var isOver = !isDone && t.due && t.due < today;
+    var meta = '';
+    var w = t.wantId && wantById(t.wantId);
+    if(w) meta += '<span class="pill want-link">→ '+esc(w.title)+'</span>';
+    if(t.due) meta += '<span class="pill due'+(isOver?' overdue':(t.due===today?' today':''))+'">'+fmtDate(t.due)+'</span>';
+    if(t.priority) meta += '<span class="pill pr-'+t.priority+'">'+prLabel(t.priority)+'</span>';
+    if(t.category) meta += '<span class="pill cat">'+esc(t.category)+'</span>';
+    if(isCarry || (t.month && t.month!==viewMonth)) meta += '<span class="pill">'+monthLabel(taskMonth(t))+'</span>';
+    var focusNote = (!isDone && t.focusDate===today && t.focusNote) ? '<div class="focus-note">'+esc(t.focusNote)+'</div>' : '';
+    var doneDate = '';
+    if(isDone && t.completedAt){ var d=new Date(t.completedAt); doneDate='<div class="done-date">完了 '+(d.getMonth()+1)+'/'+d.getDate()+'</div>'; }
+    return '<div class="task'+(isDone?' done':'')+(isOver?' overdue':'')+'" data-id="'+t.id+'" tabindex="0">'
+      + '<button class="check" type="button" data-id="'+t.id+'" aria-label="'+(isDone?'未完了に戻す':'完了にする')+'"><svg viewBox="0 0 16 16"><polyline points="3,9 7,13 13,4" fill="none" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button>'
+      + '<div class="task-body"><div class="task-title">'+esc(t.title)+'</div>'
+      + (meta?'<div class="task-meta">'+meta+'</div>':'') + focusNote + doneDate + '</div>'
+      + (isCarry?'<button class="btn btn-ghost btn-sm carry-btn" type="button" data-id="'+t.id+'">今月へ</button>':'')
+      + '</div>';
+  }
+
+  /* ---------- actions ---------- */
+  function writeFailed(){ showToast('保存できませんでした。通信状況を確認してもう一度お試しください', null); }
+
+  function toggleDone(id){
+    var t = tasks.find(function(x){return x.id===id;}); if(!t || !db) return;
+    var ref = db.collection('tasks').doc(id);
+    if(t.status==='done') ref.update({status:'open', completedAt:null}).catch(writeFailed);
+    else ref.update({status:'done', completedAt:Date.now()}).catch(writeFailed);
+  }
+  function moveToMonth(id, m){
+    if(!db) return;
+    db.collection('tasks').doc(id).update({month:m}).catch(writeFailed);
+  }
+  function toggleWant(id){
+    var w = wantById(id); if(!w || !db) return;
+    db.collection('wants').doc(id).update(w.achieved ? {achieved:false, achievedAt:null} : {achieved:true, achievedAt:Date.now()}).catch(writeFailed);
+  }
+
+  $('add-want-form').addEventListener('submit', function(e){
+    e.preventDefault();
+    var inp = $('new-want'); var v = inp.value.trim();
+    if(!v || !db) return;
+    db.collection('wants').add({title:v, note:'', month:viewMonth, achieved:false, achievedAt:null, createdAt:Date.now()}).catch(writeFailed);
+    inp.value = '';
+  });
+
+  /* task modal */
+  function fillWantOptions(month, selected){
+    var opts = wants.filter(function(w){ return w.month===month || w.id===selected; })
+      .sort(function(a,b){ return (a.createdAt||0)-(b.createdAt||0); });
+    var html = '<option value="">（まだ決めていない）</option>' + opts.map(function(w){
+      return '<option value="'+w.id+'">'+esc(w.title)+(w.month!==month?'（'+monthLabel(w.month)+'）':'')+'</option>';
+    }).join('');
+    $('f-want').innerHTML = html;
+    $('f-want').value = selected || '';
+  }
+  function openTaskAdd(){
+    editingTaskId = null;
+    $('task-modal-title').textContent = '一歩を追加';
+    $('task-delete').hidden = true;
+    $('task-form').reset();
+    $('f-month').value = viewMonth;
+    fillWantOptions(viewMonth, wantFilter || '');
+    $('task-overlay').hidden = false;
+    $('f-title').focus();
+  }
+  function openTaskEdit(id){
+    var t = tasks.find(function(x){return x.id===id;}); if(!t) return;
+    editingTaskId = id;
+    $('task-modal-title').textContent = '一歩を編集';
+    $('task-delete').hidden = false;
+    $('f-title').value = t.title||'';
+    $('f-month').value = taskMonth(t);
+    $('f-due').value = t.due||'';
+    $('f-priority').value = t.priority||'';
+    $('f-category').value = t.category||'';
+    $('f-note').value = t.note||'';
+    $('f-focus').checked = t.focusDate===todayStr();
+    fillWantOptions(taskMonth(t), t.wantId||'');
+    $('task-overlay').hidden = false;
+  }
+  function closeTask(){ $('task-overlay').hidden = true; editingTaskId = null; }
+
+  $('f-due').addEventListener('change', function(){
+    var v = $('f-due').value;
+    if(v){ $('f-month').value = v.slice(0,7); fillWantOptions(v.slice(0,7), $('f-want').value); }
+  });
+  $('f-month').addEventListener('change', function(){
+    if($('f-month').value) fillWantOptions($('f-month').value, $('f-want').value);
+  });
+
+  $('task-form').addEventListener('submit', function(e){
+    e.preventDefault();
+    if(!db) return;
+    var data = {
+      title: $('f-title').value.trim(),
+      month: $('f-month').value || viewMonth,
+      due: $('f-due').value || '',
+      priority: $('f-priority').value || '',
+      category: $('f-category').value || '',
+      wantId: $('f-want').value || '',
+      focusDate: $('f-focus').checked ? todayStr() : '',
+      note: $('f-note').value.trim()
+    };
+    if(!data.title) return;
+    if(editingTaskId){
+      db.collection('tasks').doc(editingTaskId).update(data).catch(writeFailed);
+    } else {
+      data.status='open'; data.createdAt=Date.now(); data.completedAt=null;
+      db.collection('tasks').add(data).catch(writeFailed);
+    }
+    closeTask();
+  });
+  $('task-delete').addEventListener('click', function(){
+    var t = tasks.find(function(x){return x.id===editingTaskId;});
+    if(!t || !db) return;
+    var id = t.id, copy = Object.assign({}, t); delete copy.id;
+    closeTask();
+    db.collection('tasks').doc(id).delete().catch(writeFailed);
+    showToast('一歩を削除しました', function(){ db.collection('tasks').doc(id).set(copy).catch(writeFailed); });
+  });
+  $('task-cancel').onclick = closeTask;
+  $('task-overlay').addEventListener('click', function(e){ if(e.target===this) closeTask(); });
+
+  /* want modal */
+  function openWantEdit(id){
+    var w = wantById(id); if(!w) return;
+    editingWantId = id;
+    $('w-title').value = w.title||'';
+    $('w-note').value = w.note||'';
+    $('w-month').value = w.month||viewMonth;
+    $('want-overlay').hidden = false;
+  }
+  function closeWant(){ $('want-overlay').hidden = true; editingWantId = null; }
+  $('want-form').addEventListener('submit', function(e){
+    e.preventDefault();
+    if(!db || !editingWantId) return;
+    var data = { title:$('w-title').value.trim(), note:$('w-note').value.trim(), month:$('w-month').value||viewMonth };
+    if(!data.title) return;
+    db.collection('wants').doc(editingWantId).update(data).catch(writeFailed);
+    closeWant();
+  });
+  $('want-delete').addEventListener('click', function(){
+    var w = wantById(editingWantId); if(!w || !db) return;
+    var id = w.id, copy = Object.assign({}, w); delete copy.id;
+    closeWant();
+    if(wantFilter===id) wantFilter=null;
+    db.collection('wants').doc(id).delete().catch(writeFailed);
+    showToast('wantを削除しました（つながっていた一歩は残ります）', function(){ db.collection('wants').doc(id).set(copy).catch(writeFailed); });
+  });
+  $('want-cancel').onclick = closeWant;
+  $('want-overlay').addEventListener('click', function(e){ if(e.target===this) closeWant(); });
+
+  document.addEventListener('keydown', function(e){
+    if(e.key==='Escape'){ if(!$('task-overlay').hidden) closeTask(); if(!$('want-overlay').hidden) closeWant(); if(!$('thanks-overlay').hidden) closeThanks(); if(!$('habit-overlay').hidden) closeHabit(); if(!$('wish-overlay').hidden) closeWish(); }
+  });
+
+  /* ---------- thanks ---------- */
+  var WD = ['日','月','火','水','木','金','土'];
+  function parseD(s){ return new Date(+s.slice(0,4), +s.slice(5,7)-1, +s.slice(8,10)); }
+  function dayNum(s){ return Math.round(parseD(s).getTime()/86400000); }
+  function dayHead(s){ return (+s.slice(5,7))+'/'+(+s.slice(8,10))+'（'+WD[parseD(s).getDay()]+'）'; }
+  function agoLabel(s){
+    var n = dayNum(todayStr()) - dayNum(s);
+    if(n<=0) return '今日';
+    if(n===1) return '昨日';
+    if(n<30) return n+'日前';
+    if(n<365) return Math.floor(n/30)+'か月前';
+    return Math.floor(n/365)+'年前';
+  }
+  function byNewest(a,b){ return a.date<b.date?1:a.date>b.date?-1:(b.createdAt||0)-(a.createdAt||0); }
+
+  function renderThanks(){
+    var today = todayStr();
+    $('thanks-prompt').textContent = PROMPTS[(dayNum(today)+promptOffset) % PROMPTS.length];
+    if(!$('t-date').value) $('t-date').value = today;
+
+    var all = thanks.slice().sort(byNewest);
+    var inMonth = all.filter(function(t){ return (t.date||'').slice(0,7)===viewMonth; });
+
+    var days = {}; inMonth.forEach(function(t){ days[t.date]=true; });
+    var toldN = inMonth.filter(function(t){return t.told;}).length;
+    if(tab==='thanks'){
+      $('stats').innerHTML = 'ありがとう <b>'+inMonth.length+'</b> ／ 書いた日 <b>'+Object.keys(days).length+'</b>日';
+    }
+    $('told-sub').textContent = inMonth.length ? '伝えた '+toldN+'/'+inMonth.length : '';
+
+    // people suggestions (all time, most frequent first)
+    var freq = {}; all.forEach(function(t){ if(t.person) freq[t.person]=(freq[t.person]||0)+1; });
+    $('people-list').innerHTML = Object.keys(freq).sort(function(a,b){return freq[b]-freq[a];})
+      .map(function(n){ return '<option value="'+esc(n)+'">'; }).join('');
+
+    // look back
+    var cutoff = dayNum(today) - 7;
+    var pool = all.filter(function(t){ return t.date && dayNum(t.date) <= cutoff; });
+    if(!pool.length) pool = all.filter(function(t){ return t.date && t.date < today; });
+    if(pool.length){
+      var lb = pool[(dayNum(today) + lookbackOffset) % pool.length];
+      $('lookback-slot').innerHTML = '<section class="lookback" aria-label="ふりかえり"><div class="eyebrow">ふりかえり</div>'
+        + '<div class="lb-person">'+esc(lb.person)+'さん</div>'
+        + '<div class="lb-what">'+esc(lb.what)+'</div>'
+        + (lb.feel?'<div class="lb-feel">'+esc(lb.feel)+'</div>':'')
+        + '<div class="lb-foot"><span class="lb-when">'+agoLabel(lb.date)+'（'+dayHead(lb.date)+'）</span>'
+        + (pool.length>1?'<button class="link-btn" type="button" id="lb-next">ほかの記録を見る</button>':'')+'</div></section>';
+      if(pool.length>1) $('lb-next').onclick = function(){ lookbackOffset++; renderThanks(); };
+    } else {
+      $('lookback-slot').innerHTML = '';
+    }
+
+    // people of the month
+    var pm = {}; inMonth.forEach(function(t){ if(t.person) pm[t.person]=(pm[t.person]||0)+1; });
+    var names = Object.keys(pm).sort(function(a,b){ return pm[b]-pm[a]; });
+    if(personFilter && !pm[personFilter]) personFilter = null;
+    $('people-sub').textContent = names.length ? monthLabel(viewMonth)+'は'+names.length+'人' : '';
+    $('people-chips').innerHTML = names.length
+      ? names.map(function(n){ return '<button class="person-chip" type="button" data-name="'+esc(n)+'" aria-pressed="'+(personFilter===n)+'">'+esc(n)+'<b>'+pm[n]+'</b></button>'; }).join('')
+      : '<div class="empty" style="width:100%">書き留めると、'+monthLabel(viewMonth)+'に支えてくれた人がここに並びます。</div>';
+    $('people-chips').querySelectorAll('.person-chip').forEach(function(el){
+      el.onclick = function(){ var n=el.getAttribute('data-name'); personFilter = (personFilter===n)?null:n; renderThanks(); };
+    });
+
+    $('thanks-filter').innerHTML = personFilter
+      ? '<div class="filter-note" style="background:var(--thanks-soft);color:var(--thanks)"><span>'+esc(personFilter)+'さんにしてもらったことだけ表示中</span><button type="button" id="clear-person" style="color:var(--thanks)">すべて表示</button></div>'
+      : '';
+    if(personFilter) $('clear-person').onclick = function(){ personFilter=null; renderThanks(); };
+
+    var list = inMonth.filter(function(t){ return !personFilter || t.person===personFilter; });
+    if(!list.length){
+      $('thanks-list').innerHTML = '<div class="empty">'+monthLabel(viewMonth)+'のありがとうはまだありません。<br>小さなことでも、一つ書き留めてみましょう。</div>';
+      return;
+    }
+    var h = '', lastDate = '';
+    list.forEach(function(t){
+      if(t.date!==lastDate){ h += '<div class="day-head">'+dayHead(t.date)+'</div>'; lastDate = t.date; }
+      h += '<div class="thanks-item" data-id="'+t.id+'" tabindex="0">'
+        + '<div class="ti-body"><div class="ti-person">'+esc(t.person)+'さん</div>'
+        + '<div class="ti-what">'+esc(t.what)+'</div>'
+        + (t.feel?'<div class="ti-feel">'+esc(t.feel)+'</div>':'')
+        + '</div><button class="told" type="button" data-id="'+t.id+'" aria-pressed="'+(!!t.told)+'">'+(t.told?'伝えた ✓':'まだ伝えていない')+'</button></div>';
+    });
+    $('thanks-list').innerHTML = h;
+    $('thanks-list').querySelectorAll('.told').forEach(function(el){
+      el.onclick = function(e){ e.stopPropagation(); toggleTold(el.getAttribute('data-id')); };
+    });
+    $('thanks-list').querySelectorAll('.thanks-item').forEach(function(el){
+      el.onclick = function(){ openThanksEdit(el.getAttribute('data-id')); };
+      el.onkeydown = function(e){ if(e.key==='Enter' && e.target===el) openThanksEdit(el.getAttribute('data-id')); };
+    });
+  }
+
+  function toggleTold(id){
+    var t = thanks.find(function(x){return x.id===id;}); if(!t || !db) return;
+    db.collection('thanks').doc(id).update(t.told ? {told:false, toldAt:null} : {told:true, toldAt:Date.now()}).catch(writeFailed);
+  }
+
+  $('next-prompt').onclick = function(){ promptOffset++; renderThanks(); };
+
+  $('thanks-form').addEventListener('submit', function(e){
+    e.preventDefault();
+    if(!db) return;
+    var date = $('t-date').value || todayStr();
+    var data = {
+      person: $('t-person').value.trim(),
+      what: $('t-what').value.trim(),
+      feel: $('t-feel').value.trim(),
+      date: date, month: date.slice(0,7),
+      told: false, toldAt: null, createdAt: Date.now()
+    };
+    if(!data.person || !data.what) return;
+    db.collection('thanks').add(data).then(function(){
+      showToast(data.person+'さんへのありがとうを書き留めました', null);
+    }).catch(writeFailed);
+    $('t-person').value = ''; $('t-what').value = ''; $('t-feel').value = '';
+    promptOffset++;
+  });
+
+  function openThanksEdit(id){
+    var t = thanks.find(function(x){return x.id===id;}); if(!t) return;
+    editingThanksId = id;
+    $('te-person').value = t.person||'';
+    $('te-date').value = t.date||todayStr();
+    $('te-what').value = t.what||'';
+    $('te-feel').value = t.feel||'';
+    $('te-told').checked = !!t.told;
+    $('thanks-overlay').hidden = false;
+  }
+  function closeThanks(){ $('thanks-overlay').hidden = true; editingThanksId = null; }
+  $('thanks-edit-form').addEventListener('submit', function(e){
+    e.preventDefault();
+    var t = thanks.find(function(x){return x.id===editingThanksId;});
+    if(!t || !db) return;
+    var date = $('te-date').value || t.date;
+    var told = $('te-told').checked;
+    var data = { person:$('te-person').value.trim(), what:$('te-what').value.trim(), feel:$('te-feel').value.trim(), date:date, month:date.slice(0,7), told:told };
+    if(told !== !!t.told) data.toldAt = told ? Date.now() : null;
+    if(!data.person || !data.what) return;
+    db.collection('thanks').doc(t.id).update(data).catch(writeFailed);
+    closeThanks();
+  });
+  $('thanks-delete').addEventListener('click', function(){
+    var t = thanks.find(function(x){return x.id===editingThanksId;}); if(!t || !db) return;
+    var id = t.id, copy = Object.assign({}, t); delete copy.id;
+    closeThanks();
+    db.collection('thanks').doc(id).delete().catch(writeFailed);
+    showToast('記録を削除しました', function(){ db.collection('thanks').doc(id).set(copy).catch(writeFailed); });
+  });
+  $('thanks-cancel').onclick = closeThanks;
+  $('thanks-overlay').addEventListener('click', function(e){ if(e.target===this) closeThanks(); });
+
+  /* ---------- habits ---------- */
+  var WD_MON = ['月','火','水','木','金','土','日'];
+  function addDays(s, n){ var d = parseD(s); d.setDate(d.getDate()+n); return localDateStr(d); }
+  function daysInMonth(m){ return new Date(+m.slice(0,4), +m.slice(5,7), 0).getDate(); }
+  function logId(hid, m){ return hid+'_'+m; }
+  function isDone(h, ds){
+    var l = habitLogs[logId(h.id, ds.slice(0,7))];
+    return !!(l && l.days && l.days[ds.slice(8,10)]);
+  }
+  function countIn(h, from, to){
+    var n = 0, d = from;
+    while(d <= to){ if(isDone(h, d)) n++; d = addDays(d, 1); }
+    return n;
+  }
+  function weekStart(ds){ var d = parseD(ds); var off = (d.getDay()+6)%7; d.setDate(d.getDate()-off); return localDateStr(d); }
+  function streak(h){
+    var today = todayStr();
+    var d = isDone(h, today) ? today : addDays(today, -1);
+    var n = 0;
+    while(n < 1000 && isDone(h, d)){ n++; d = addDays(d, -1); }
+    return n;
+  }
+  function freqLabel(h){
+    return h.freq==='weekly' ? '週'+(h.target||1)+'回' : h.freq==='monthly' ? '月'+(h.target||1)+'回' : '毎日';
+  }
+  function habitHasLogs(h, m){
+    var l = habitLogs[logId(h.id, m)];
+    return !!(l && l.days && Object.keys(l.days).some(function(k){ return l.days[k]; }));
+  }
+
+  function renderHabits(){
+    var today = todayStr(), cur = thisMonth(), isCur = viewMonth===cur;
+    var monthStart = viewMonth+'-01', dim = daysInMonth(viewMonth);
+    var monthEnd = viewMonth+'-'+pad(dim);
+    var list = habits.filter(function(h){
+      if(h.active===false) return habitHasLogs(h, viewMonth);
+      var created = h.createdAt ? localDateStr(new Date(h.createdAt)).slice(0,7) : '';
+      return !created || created <= viewMonth || habitHasLogs(h, viewMonth);
+    }).sort(function(a,b){ return (a.createdAt||0)-(b.createdAt||0); });
+
+    if(tab==='habits'){
+      if(!habitLoaded){ $('stats').textContent = '読み込み中…'; }
+      else if(isCur){
+        var act = list.filter(function(h){ return h.active!==false; });
+        var doneToday = act.filter(function(h){ return isDone(h, today); }).length;
+        $('stats').innerHTML = '今日できた <b>'+doneToday+'</b>/<b>'+act.length+'</b>';
+      } else {
+        $('stats').innerHTML = monthLabel(viewMonth)+'の記録';
+      }
+    }
+    if(!habitLoaded) return;
+
+    if(!list.length){
+      $('habit-list').innerHTML = '<div class="empty">'+(isCur
+        ? 'まだ習慣がありません。<br>「＋ 習慣を追加」から、「ストレッチ（毎日）」「ジム（週2回）」のように登録できます。'
+        : monthLabel(viewMonth)+'の習慣の記録はありません。')+'</div>';
+      return;
+    }
+
+    var lastCounted = isCur ? today : monthEnd;
+    $('habit-list').innerHTML = list.map(function(h){
+      var monthCount = countIn(h, monthStart, lastCounted < monthStart ? monthStart : lastCounted);
+      var progress = '', met = false;
+      if(h.freq==='weekly'){
+        var t = h.target||1;
+        if(isCur){
+          var ws = weekStart(today), wc = countIn(h, ws, addDays(ws,6));
+          met = wc >= t;
+          progress = '今週 <b>'+wc+'</b>/'+t+'回 ・ 今月 <b>'+monthCount+'</b>回';
+        } else {
+          progress = monthLabel(viewMonth)+'は <b>'+monthCount+'</b>回';
+        }
+      } else if(h.freq==='monthly'){
+        var tm = h.target||1;
+        met = monthCount >= tm;
+        progress = (isCur?'今月':monthLabel(viewMonth)+'は')+' <b>'+monthCount+'</b>/'+tm+'回';
+      } else {
+        var denom = isCur ? (+today.slice(8,10)) : dim;
+        progress = (isCur?'今月':monthLabel(viewMonth)+'は')+' <b>'+monthCount+'</b>/'+denom+'日';
+        if(isCur){
+          var st = streak(h);
+          if(st>=2) progress += ' ・ <b>'+st+'</b>日連続';
+          met = isDone(h, today);
+        }
+      }
+      var w = h.wantId && wantById(h.wantId);
+      var sub = '<span class="pill freq">'+freqLabel(h)+'</span>';
+      if(met && h.freq!=='daily') sub += '<span class="pill met">'+(h.freq==='weekly'?'今週達成':'今月達成')+'</span>';
+      if(w) sub += '<span class="pill want-link">→ '+esc(w.title)+'</span>';
+      if(h.active===false) sub += '<span class="pill">やめた習慣</span>';
+
+      var todayDone = isDone(h, today);
+      var top = '<div class="habit-top">'
+        + (isCur && h.active!==false
+            ? '<button class="today-btn" type="button" data-id="'+h.id+'" aria-pressed="'+todayDone+'" aria-label="'+esc(h.name)+'を今日やった"><span class="mark">'+(todayDone?'✓':'＋')+'</span>今日</button>'
+            : '')
+        + '<div class="habit-head" data-id="'+h.id+'" tabindex="0" role="button"><div class="habit-name">'+esc(h.name)+'</div>'
+        + '<div class="habit-sub">'+sub+'</div>'
+        + '<div class="habit-progress">'+progress+'</div></div></div>';
+
+      var first = (parseD(monthStart).getDay()+6)%7;
+      var cal = '<div class="cal" role="group" aria-label="'+esc(h.name)+'の'+monthLabel(viewMonth)+'の記録">';
+      WD_MON.forEach(function(x){ cal += '<div class="wd">'+x+'</div>'; });
+      for(var i=0;i<first;i++) cal += '<div class="blank"></div>';
+      for(var d=1; d<=dim; d++){
+        var ds = viewMonth+'-'+pad(d);
+        var on = isDone(h, ds), fut = ds > today;
+        cal += '<button type="button" class="d'+(on?' on':'')+(ds===today?' today':'')+'" data-id="'+h.id+'" data-date="'+ds+'"'
+          + (fut || h.active===false ? ' disabled' : '') + ' aria-pressed="'+on+'" aria-label="'+(+ds.slice(5,7))+'月'+d+'日">'+d+'</button>';
+      }
+      cal += '</div>';
+      return '<div class="habit'+(met?' met':'')+'">'+top+cal+'</div>';
+    }).join('');
+
+    $('habit-list').querySelectorAll('.today-btn').forEach(function(el){
+      el.onclick = function(){ toggleHabit(el.getAttribute('data-id'), todayStr()); };
+    });
+    $('habit-list').querySelectorAll('.cal .d').forEach(function(el){
+      el.onclick = function(){ toggleHabit(el.getAttribute('data-id'), el.getAttribute('data-date')); };
+    });
+    $('habit-list').querySelectorAll('.habit-head').forEach(function(el){
+      el.onclick = function(){ openHabitEdit(el.getAttribute('data-id')); };
+      el.onkeydown = function(e){ if(e.key==='Enter') openHabitEdit(el.getAttribute('data-id')); };
+    });
+  }
+
+  function toggleHabit(hid, ds){
+    if(!db || ds > todayStr()) return;
+    var m = ds.slice(0,7), id = logId(hid, m), dd = ds.slice(8,10);
+    var curLog = habitLogs[id] || {habitId:hid, month:m, days:{}};
+    var days = Object.assign({}, curLog.days||{});
+    if(days[dd]) delete days[dd]; else days[dd] = true;
+    var body = {habitId:hid, month:m, days:days, updatedAt:Date.now()};
+    habitLogs[id] = body;
+    renderHabits();
+    var prev = logChains[id] || Promise.resolve();
+    logChains[id] = prev.then(function(){
+      return db.collection('habitLogs').doc(id).set(habitLogs[id]);
+    }).catch(writeFailed);
+  }
+
+  function fillHabitWant(selected){
+    var opts = wants.filter(function(w){ return w.month===thisMonth() || w.id===selected; })
+      .sort(function(a,b){ return (a.createdAt||0)-(b.createdAt||0); });
+    $('h-want').innerHTML = '<option value="">（なし）</option>' + opts.map(function(w){
+      return '<option value="'+w.id+'">'+esc(w.title)+'</option>';
+    }).join('');
+    $('h-want').value = selected || '';
+  }
+  function syncTargetField(){ $('h-target-field').hidden = $('h-freq').value==='daily'; }
+  $('h-freq').addEventListener('change', syncTargetField);
+
+  function openHabitAdd(){
+    editingHabitId = null;
+    $('habit-modal-title').textContent = '習慣を追加';
+    $('habit-delete').hidden = true;
+    $('habit-form').reset();
+    $('h-target').value = 2;
+    fillHabitWant('');
+    syncTargetField();
+    $('habit-overlay').hidden = false;
+    $('h-name').focus();
+  }
+  function openHabitEdit(id){
+    var h = habits.find(function(x){return x.id===id;}); if(!h) return;
+    editingHabitId = id;
+    $('habit-modal-title').textContent = '習慣を編集';
+    $('habit-delete').hidden = h.active===false;
+    $('h-name').value = h.name||'';
+    $('h-freq').value = h.freq||'daily';
+    $('h-target').value = h.target||2;
+    $('h-note').value = h.note||'';
+    fillHabitWant(h.wantId||'');
+    syncTargetField();
+    $('habit-overlay').hidden = false;
+  }
+  function closeHabit(){ $('habit-overlay').hidden = true; editingHabitId = null; }
+  $('habit-form').addEventListener('submit', function(e){
+    e.preventDefault();
+    if(!db) return;
+    var freq = $('h-freq').value;
+    var data = {
+      name: $('h-name').value.trim(),
+      freq: freq,
+      target: freq==='daily' ? 1 : Math.max(1, Math.min(31, parseInt($('h-target').value,10)||1)),
+      wantId: $('h-want').value || '',
+      note: $('h-note').value.trim()
+    };
+    if(!data.name) return;
+    if(editingHabitId){
+      db.collection('habits').doc(editingHabitId).update(data).catch(writeFailed);
+    } else {
+      data.active = true; data.createdAt = Date.now();
+      db.collection('habits').add(data).catch(writeFailed);
+    }
+    closeHabit();
+  });
+  $('habit-delete').addEventListener('click', function(){
+    var h = habits.find(function(x){return x.id===editingHabitId;}); if(!h || !db) return;
+    var id = h.id;
+    closeHabit();
+    db.collection('habits').doc(id).update({active:false, endedAt:Date.now()}).catch(writeFailed);
+    showToast('「'+h.name+'」をやめました（これまでの記録は残ります）', function(){
+      db.collection('habits').doc(id).update({active:true, endedAt:null}).catch(writeFailed);
+    });
+  });
+  $('habit-cancel').onclick = closeHabit;
+  $('habit-overlay').addEventListener('click', function(e){ if(e.target===this) closeHabit(); });
+
+  /* ---------- wishes ---------- */
+  function renderWishes(){
+    var year = viewMonth.slice(0,4), today = todayStr(), curYear = today.slice(0,4);
+    $('wish-year-label').textContent = year+'年のうちに';
+    if(year===curYear){
+      var left = dayNum(year+'-12-31') - dayNum(today);
+      $('days-left').innerHTML = '今年はあと <b>'+left+'</b> 日';
+    } else {
+      $('days-left').textContent = year < curYear ? year+'年の記録' : '';
+    }
+    var list = wishes.filter(function(w){ return (w.year||'')===year; });
+    var open = list.filter(function(w){ return w.status!=='done'; }).sort(function(a,b){ return (b.createdAt||0)-(a.createdAt||0); });
+    var done = list.filter(function(w){ return w.status==='done'; }).sort(function(a,b){ return (b.doneAt||0)-(a.doneAt||0); });
+    if(tab==='wishes'){
+      $('stats').innerHTML = wishLoaded ? '叶った <b>'+done.length+'</b>/<b>'+list.length+'</b>' : '読み込み中…';
+    }
+    if(!wishLoaded) return;
+    $('wish-sub').textContent = open.length ? 'まだ '+open.length+'件' : '';
+
+    function row(w){
+      var isDone = w.status==='done';
+      var meta = '';
+      if(w.promotedMonth) meta += '<span class="pill wishp">'+monthLabel(w.promotedMonth)+'のwantにした</span>';
+      if(isDone && w.doneAt){ var d=new Date(w.doneAt); meta += '<span class="pill">叶った '+(d.getMonth()+1)+'/'+d.getDate()+'</span>'; }
+      else if(w.createdAt){ var c=new Date(w.createdAt); meta += '<span class="pill">'+(c.getMonth()+1)+'/'+c.getDate()+' に思いついた</span>'; }
+      var canPromote = !isDone && year===curYear && w.promotedMonth!==thisMonth();
+      return '<div class="wish'+(isDone?' done':'')+'" data-id="'+w.id+'" tabindex="0">'
+        + '<button class="wish-star" type="button" data-id="'+w.id+'" aria-pressed="'+isDone+'" aria-label="'+(isDone?'叶っていないに戻す':'叶った')+'">'+(isDone?'✓':'')+'</button>'
+        + '<div class="wish-body"><div class="wish-title">'+esc(w.title)+'</div>'
+        + (w.note?'<div class="wish-note">'+esc(w.note)+'</div>':'')
+        + '<div class="wish-meta">'+meta+'</div></div>'
+        + (canPromote?'<button class="btn btn-ghost btn-sm promote" type="button" data-id="'+w.id+'">今月のwantに</button>':'')
+        + '</div>';
+    }
+
+    $('wish-list').innerHTML = open.length
+      ? '<div class="wish-list">'+open.map(row).join('')+'</div>'
+      : '<div class="empty">'+(year===curYear ? 'まだ何もありません。<br>「いつかやりたい」と思ったら、上の欄にひとこと書いて溜めておきましょう。' : year+'年の叶えたいことはありません。')+'</div>';
+
+    $('wish-done-slot').innerHTML = '<button class="done-toggle'+(wishDoneOpen?' open':'')+'" id="wish-done-toggle" type="button" aria-expanded="'+wishDoneOpen+'">'
+      + '<span>'+year+'年に叶ったこと（'+done.length+'件）</span><span class="chev">▾</span></button>'
+      + (wishDoneOpen ? '<div class="done-list">'+(done.length ? '<div class="wish-list">'+done.map(row).join('')+'</div>' : '<div class="empty">叶ったことが、ここに積み上がっていきます。</div>')+'</div>' : '');
+    $('wish-done-toggle').onclick = function(){ wishDoneOpen = !wishDoneOpen; renderWishes(); };
+
+    var root = $('pane-wishes');
+    root.querySelectorAll('.wish-star').forEach(function(el){
+      el.onclick = function(e){ e.stopPropagation(); toggleWish(el.getAttribute('data-id')); };
+    });
+    root.querySelectorAll('.promote').forEach(function(el){
+      el.onclick = function(e){ e.stopPropagation(); promoteWish(el.getAttribute('data-id')); };
+    });
+    root.querySelectorAll('.wish').forEach(function(el){
+      el.onclick = function(){ openWishEdit(el.getAttribute('data-id')); };
+      el.onkeydown = function(e){ if(e.key==='Enter' && e.target===el) openWishEdit(el.getAttribute('data-id')); };
+    });
+  }
+
+  function toggleWish(id){
+    var w = wishes.find(function(x){return x.id===id;}); if(!w || !db) return;
+    if(w.status==='done'){
+      db.collection('wishes').doc(id).update({status:'open', doneAt:null}).catch(writeFailed);
+    } else {
+      db.collection('wishes').doc(id).update({status:'done', doneAt:Date.now()}).then(function(){
+        showToast('おめでとうございます。「'+w.title+'」が叶いました', null);
+      }).catch(writeFailed);
+    }
+  }
+  function promoteWish(id){
+    var w = wishes.find(function(x){return x.id===id;}); if(!w || !db) return;
+    var m = thisMonth();
+    db.collection('wants').add({title:w.title, note:w.note||'', month:m, achieved:false, achievedAt:null, createdAt:Date.now(), wishId:w.id})
+      .then(function(){ return db.collection('wishes').doc(id).update({promotedMonth:m}); })
+      .then(function(){ showToast('「'+w.title+'」を'+monthLabel(m)+'のwantにしました', null); })
+      .catch(writeFailed);
+  }
+  $('wish-add-form').addEventListener('submit', function(e){
+    e.preventDefault();
+    var v = $('new-wish').value.trim();
+    if(!v || !db) return;
+    var year = viewMonth.slice(0,4) < todayStr().slice(0,4) ? todayStr().slice(0,4) : viewMonth.slice(0,4);
+    db.collection('wishes').add({title:v, note:'', year:year, status:'open', doneAt:null, promotedMonth:'', createdAt:Date.now()}).catch(writeFailed);
+    $('new-wish').value = '';
+  });
+  function openWishEdit(id){
+    var w = wishes.find(function(x){return x.id===id;}); if(!w) return;
+    editingWishId = id;
+    $('ws-title').value = w.title||'';
+    $('ws-note').value = w.note||'';
+    $('ws-done').checked = w.status==='done';
+    $('wish-overlay').hidden = false;
+  }
+  function closeWish(){ $('wish-overlay').hidden = true; editingWishId = null; }
+  $('wish-form').addEventListener('submit', function(e){
+    e.preventDefault();
+    var w = wishes.find(function(x){return x.id===editingWishId;}); if(!w || !db) return;
+    var data = {title:$('ws-title').value.trim(), note:$('ws-note').value.trim()};
+    if(!data.title) return;
+    var nowDone = $('ws-done').checked;
+    if(nowDone !== (w.status==='done')){ data.status = nowDone?'done':'open'; data.doneAt = nowDone?Date.now():null; }
+    db.collection('wishes').doc(w.id).update(data).catch(writeFailed);
+    closeWish();
+  });
+  $('wish-delete').addEventListener('click', function(){
+    var w = wishes.find(function(x){return x.id===editingWishId;}); if(!w || !db) return;
+    var id = w.id, copy = Object.assign({}, w); delete copy.id;
+    closeWish();
+    db.collection('wishes').doc(id).delete().catch(writeFailed);
+    showToast('削除しました', function(){ db.collection('wishes').doc(id).set(copy).catch(writeFailed); });
+  });
+  $('wish-cancel').onclick = closeWish;
+  $('wish-overlay').addEventListener('click', function(e){ if(e.target===this) closeWish(); });
+
+  /* tabs */
+  var TABS = {
+    tasks:  {label:'＋ 一歩を追加', cls:'btn-accent'},
+    habits: {label:'＋ 習慣を追加', cls:'btn-habit'},
+    wishes: {label:'＋ 望みを追加', cls:'btn-wish'},
+    thanks: {label:'＋ ありがとう', cls:'btn-thanks'}
+  };
+  function setTab(t){
+    if(!TABS[t]) t = 'tasks';
+    tab = t;
+    Object.keys(TABS).forEach(function(k){
+      $('pane-'+k).hidden = k!==t;
+      $('tab-btn-'+k).setAttribute('aria-selected', String(k===t));
+    });
+    $('add-btn').textContent = TABS[t].label;
+    $('add-btn').className = 'btn ' + TABS[t].cls;
+    try{ localStorage.setItem('fulfill-tab', t); }catch(e){}
+    if(db){ renderTasks(); renderHabits(); renderWishes(); renderThanks(); }
+  }
+  Object.keys(TABS).forEach(function(k){ $('tab-btn-'+k).onclick = function(){ setTab(k); }; });
+
+  /* month nav */
+  function go(m){ viewMonth=m; editingTheme=false; wantFilter=null; personFilter=null; doneOpen=false; render(); }
+  $('prev-month').onclick = function(){ go(shiftMonth(viewMonth,-1)); };
+  $('next-month').onclick = function(){ go(shiftMonth(viewMonth,1)); };
+  $('this-month').onclick = function(){ go(thisMonth()); };
+  $('add-btn').onclick = function(){
+    if(tab==='tasks'){ openTaskAdd(); return; }
+    if(tab==='habits'){ openHabitAdd(); return; }
+    if(tab==='wishes'){ $('new-wish').focus(); $('wish-add-form').scrollIntoView({behavior:'smooth', block:'center'}); return; }
+    if(viewMonth!==thisMonth()) go(thisMonth());
+    $('t-date').value = todayStr();
+    $('thanks-form').scrollIntoView({behavior:'smooth', block:'center'});
+    $('t-person').focus();
+  };
+
+  function showToast(msg, onUndo){
+    $('toast-msg').textContent = msg;
+    $('toast-undo').hidden = !onUndo;
+    $('toast').hidden = false;
+    clearTimeout(toastTimer);
+    $('toast-undo').onclick = function(){ $('toast').hidden = true; if(onUndo) onUndo(); };
+    toastTimer = setTimeout(function(){ $('toast').hidden = true; }, 5000);
+  }
+
+  /* ---------- data ---------- */
+  function toRows(snap){
+    return snap.docs.map(function(d){ var o = Object.assign({}, d.data()||{}); o.id = d.id; return o; });
+  }
+  function failed(){
+    var msg = '<div class="notice">データに接続できませんでした。少し待ってから開き直してください。</div>';
+    $('task-area').innerHTML = msg;
+    $('thanks-list').innerHTML = msg;
+    $('habit-list').innerHTML = msg;
+    $('wish-list').innerHTML = msg;
+  }
+
+  function boot(){
+    var initial = 'tasks';
+    try{ initial = localStorage.getItem('fulfill-tab') || 'tasks'; }catch(e){}
+    var hash = (location.hash||'').slice(1);
+    if(TABS[hash]) initial = hash;
+    setTab(initial);
+    render();
+    $('stats').textContent = '読み込み中…';
+    $('task-area').innerHTML = '<div class="notice">読み込み中…</div>';
+    $('thanks-list').innerHTML = '<div class="notice">読み込み中…</div>';
+    if(!window.fulfillDbPromise){ failed(); return; }
+    window.fulfillDbPromise.then(function(ns){
+      db = ns;
+      if(!db){ failed(); return; }
+      db.collection('tasks').onSnapshot(function(s){ tasks = toRows(s); loaded.tasks=true; renderWants(); renderTasks(); }, failed);
+      db.collection('wants').onSnapshot(function(s){ wants = toRows(s); loaded.wants=true; renderWants(); renderTasks(); }, failed);
+      db.collection('thanks').onSnapshot(function(s){ thanks = toRows(s); renderThanks(); }, failed);
+      db.collection('wishes').onSnapshot(function(s){ wishes = toRows(s); wishLoaded = true; renderWishes(); }, failed);
+      db.collection('habits').onSnapshot(function(s){ habits = toRows(s); habitLoaded = true; renderHabits(); }, failed);
+      db.collection('habitLogs').onSnapshot(function(s){
+        var m = {}; s.docs.forEach(function(d){ m[d.id] = d.data()||{}; });
+        Object.keys(logChains).forEach(function(k){ if(habitLogs[k] && !m[k]) m[k] = habitLogs[k]; });
+        habitLogs = m; renderHabits();
+      }, failed);
+      db.collection('months').onSnapshot(function(s){
+        var m = {}; s.docs.forEach(function(d){ m[d.id] = d.data()||{}; });
+        months = m; loaded.months=true;
+        if(!editingTheme) renderTheme();
+      }, failed);
+    }).catch(failed);
+  }
+
+  window.__fulfillBoot = boot;
+  if(window.fulfillDbPromise) boot();
+})();
+</script>
+</body>
+</html>
