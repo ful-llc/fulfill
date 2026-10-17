@@ -395,6 +395,8 @@
   .auth-msg.ok{background:var(--done-soft);color:var(--done);}
   .auth-links{display:flex;flex-direction:column;align-items:center;gap:6px;margin-top:16px;}
   .link-btn{background:none;border:none;color:var(--accent);font-size:.8rem;cursor:pointer;padding:4px;font-family:inherit;}
+  .auth-note{font-size:.72rem;color:var(--fg-muted);text-align:center;margin:12px 0 0;line-height:1.6;}
+  .auth-note a,.app-foot a{color:var(--fg-muted);}
   .app-foot{display:flex;justify-content:center;gap:12px;align-items:center;margin-top:36px;font-size:.72rem;color:var(--fg-muted);flex-wrap:wrap;}
   .app-foot .link-btn{font-size:.72rem;color:var(--fg-muted);text-decoration:underline;}
   .boot{min-height:60vh;display:flex;align-items:center;justify-content:center;color:var(--fg-muted);font-size:.85rem;}
@@ -423,6 +425,8 @@
       <button class="link-btn" id="auth-switch" type="button">はじめての方は新規登録</button>
       <button class="link-btn" id="auth-forgot" type="button">パスワードを忘れた方</button>
     </div>
+    <p class="auth-note" id="auth-consent" hidden>登録すると、<a href="privacy.html">プライバシーについて</a>の内容に同意したことになります。</p>
+    <p class="auth-note"><a href="privacy.html">プライバシーについて</a></p>
   </div>
 </div>
 
@@ -730,6 +734,7 @@
 <footer class="app-foot">
   <span id="account-email"></span>
   <button class="link-btn" id="logout-btn" type="button">ログアウト</button>
+  <a href="privacy.html">プライバシーについて</a>
 </footer>
 </div>
 
@@ -876,6 +881,7 @@ var SUPABASE_KEY = 'sb_publishable_1VzEt0_ROkC-Col_PwBfxg_3HAqqvMp';
     $('auth-switch').hidden = m === 'recovery';
     $('auth-switch').textContent = m === 'login' ? 'はじめての方は新規登録' : 'ログイン画面に戻る';
     $('auth-forgot').hidden = m !== 'login';
+    $('auth-consent').hidden = m !== 'signup';
   }
   function showAuth(m){
     $('boot-screen').hidden = true; $('app').hidden = true; $('auth-screen').hidden = false;
@@ -894,7 +900,8 @@ var SUPABASE_KEY = 'sb_publishable_1VzEt0_ROkC-Col_PwBfxg_3HAqqvMp';
   function redirectUrl(){ return location.origin + location.pathname; }
 
   $('auth-switch').onclick = function(){ setMode(mode === 'login' ? 'signup' : 'login'); };
-  $('auth-forgot').onclick = function(){ setMode('forgot'); };
+  // 再設定メールは現在送れない設定のため、連絡先を案内する
+  $('auth-forgot').onclick = function(){ msg('パスワードを忘れた場合は、InstagramのDMか ful.official920@gmail.com まで、登録したメールアドレスを添えてご連絡ください。再設定をお手伝いします。', 'ok'); };
 
   $('auth-form').addEventListener('submit', function(e){
     e.preventDefault();
